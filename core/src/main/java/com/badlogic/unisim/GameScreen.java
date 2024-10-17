@@ -1,14 +1,19 @@
 package com.badlogic.unisim;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+/**
+ * This class handles all the game logic and visuals for the main game screen
+ */
 public class GameScreen implements Screen {
     // Reference the main game class to communicate with main game manager.
     private final UniSimGame game;
@@ -31,8 +36,13 @@ public class GameScreen implements Screen {
         viewport = new FitViewport(MAP_WIDTH, MAP_HEIGHT, camera);
 
         tiledMap = new TmxMapLoader().load("MarsMap.tmx");
+        TiledMapTileLayer buildableLayer = (TiledMapTileLayer) tiledMap.getLayers().get("BuildableLayer");
         // Create a map renderer to be able to render the map in game.
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+        // Set up InputProcessor containing collision detection
+        GameInputProcessor inputProcessor = new GameInputProcessor(camera, buildableLayer);
+        Gdx.input.setInputProcessor(inputProcessor);
     }
 
     @Override
@@ -76,4 +86,5 @@ public class GameScreen implements Screen {
         tiledMap.dispose();
         mapRenderer.dispose();
     }
+
 }

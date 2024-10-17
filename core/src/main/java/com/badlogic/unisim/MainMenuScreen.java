@@ -3,7 +3,10 @@ package com.badlogic.unisim;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 
-/** First screen of the application. Displayed after the application is created. */
+/**
+ * First screen of the application. Displayed after the application is created.
+ * This class represents the Main Menu of the game.
+ */
 public class MainMenuScreen implements Screen {
     // Reference the main game class to communicate with main game manager.
     private final UniSimGame game;
