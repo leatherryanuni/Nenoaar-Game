@@ -1,21 +1,58 @@
 package com.badlogic.unisim;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class GameScreen implements Screen {
+    // Reference the main game class to communicate with main game manager.
+    private final UniSimGame game;
+    private OrthographicCamera camera;
+    private FitViewport viewport;
+    private TiledMap tiledMap;
+    private OrthogonalTiledMapRenderer mapRenderer;
+
+    public GameScreen(UniSimGame game) {
+        this.game = game;
+    }
+
     @Override
     public void show() {
         // Prepare your screen here
+        int MAP_WIDTH = 1920; // width in pixels
+        int MAP_HEIGHT = 1056; // height in pixels
+        // Initialise camera and viewport to fit the size of the map.
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(MAP_WIDTH, MAP_HEIGHT, camera);
+
+        tiledMap = new TmxMapLoader().load("MarsMap.tmx");
+        // Create a map renderer to be able to render the map in game.
+        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
     }
 
     @Override
     public void render(float delta) {
         // Draw your screen here. "delta" is the time since last render in seconds.
+        // Clear the screen
+        ScreenUtils.clear(Color.BLACK);
+        camera.update();
+        // Set the camera to the map renderer to make the map visible.
+        mapRenderer.setView(camera);
+        mapRenderer.render();
+
+        game.batch.begin();
+        game.batch.end();
     }
 
     @Override
     public void resize(int width, int height) {
         // Resize your screen here. The parameters represent the new window size.
+        viewport.update(width, height, true);
     }
 
     @Override
@@ -35,6 +72,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        // Destroy screen's assets here.
+        // Destroy screen's assets here when we switch to the EndScreen.
+        tiledMap.dispose();
+        mapRenderer.dispose();
     }
 }
