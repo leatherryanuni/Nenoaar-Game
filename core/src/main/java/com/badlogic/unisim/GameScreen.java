@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -17,37 +18,51 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class GameScreen implements Screen {
     // Reference the main game class to communicate with main game manager.
     private final UniSimGame game;
+    private final GameTimer gameTimer;
     private OrthographicCamera camera;
+    private BitmapFont font;
     private FitViewport viewport;
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
 
+    //private final int MAP_WIDTH = 1920;
+    //private final int MAP_HEIGHT = 1056;
+
     public GameScreen(UniSimGame game) {
         this.game = game;
+        this.gameTimer = new GameTimer(5);
     }
 
     @Override
     public void show() {
         // Prepare your screen here
-        int MAP_WIDTH = 1920; // width in pixels
-        int MAP_HEIGHT = 1056; // height in pixels
+        int MAP_WIDTH = 1920;
+        int MAP_HEIGHT = 1056;
         // Initialise camera and viewport to fit the size of the map.
         camera = new OrthographicCamera();
         viewport = new FitViewport(MAP_WIDTH, MAP_HEIGHT, camera);
-
+        // Load map and 'buildable' layer
         tiledMap = new TmxMapLoader().load("MarsMap.tmx");
         TiledMapTileLayer buildableLayer = (TiledMapTileLayer) tiledMap.getLayers().get("BuildableLayer");
         // Create a map renderer to be able to render the map in game.
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-
-        // Set up InputProcessor containing collision detection
-        GameInputProcessor inputProcessor = new GameInputProcessor(camera, buildableLayer);
+        // Placeholder
+        font = new BitmapFont();
+        // Set up InputProcessor containing collision detection and initialise game timer
+        GameInputProcessor inputProcessor = new GameInputProcessor(camera, buildableLayer, gameTimer);
         Gdx.input.setInputProcessor(inputProcessor);
+
     }
 
     @Override
     public void render(float delta) {
         // Draw your screen here. "delta" is the time since last render in seconds.
+        // Update timer
+        gameTimer.updateTime(delta);
+        // Check if the timer has ended, end the game once it has.
+        if (gameTimer.isTimeEnded()) {
+            game.setScreen(new EndScreen(game));
+        }
         // Clear the screen
         ScreenUtils.clear(Color.BLACK);
         camera.update();
@@ -56,6 +71,9 @@ public class GameScreen implements Screen {
         mapRenderer.render();
 
         game.batch.begin();
+        // Display the timer on-screen
+        font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
+            10, 20);
         game.batch.end();
     }
 

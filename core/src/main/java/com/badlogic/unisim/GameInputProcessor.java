@@ -1,5 +1,6 @@
 package com.badlogic.unisim;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -12,17 +13,31 @@ import com.badlogic.gdx.math.Vector3;
  * on non-buildable areas of the map.
  */
 public class GameInputProcessor implements InputProcessor {
+    private final GameTimer gameTimer;
     private final OrthographicCamera camera;
     private final TiledMapTileLayer buildableLayer;
 
     public GameInputProcessor (OrthographicCamera camera,
-                               TiledMapTileLayer buildableLayer) {
+                               TiledMapTileLayer buildableLayer,
+                               GameTimer gameTimer) {
+        this.gameTimer = gameTimer;
         this.camera = camera;
         this.buildableLayer = buildableLayer;
     }
 
     @Override
-    public boolean keyDown (int keycode) { return false; }
+    public boolean keyDown (int keycode) {
+        // The key 'P' allows pausing and resuming in-game
+        if (keycode == Input.Keys.P) {
+            if (gameTimer.isPaused()) {
+                gameTimer.resumeTime();
+            } else {
+                gameTimer.pauseTime();
+            }
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public boolean keyUp (int keycode) { return false; }
@@ -47,7 +62,7 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        checkBuildable(screenX, screenY);
+        //checkBuildable(screenX, screenY);
         return false;
     }
 
