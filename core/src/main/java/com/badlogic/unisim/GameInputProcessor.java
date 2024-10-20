@@ -16,13 +16,15 @@ public class GameInputProcessor implements InputProcessor {
     private final GameTimer gameTimer;
     private final OrthographicCamera camera;
     private final TiledMapTileLayer buildableLayer;
+    private final PausePopup pausePopup;
 
-    public GameInputProcessor (OrthographicCamera camera,
+    public GameInputProcessor (UniSimGame game, OrthographicCamera camera,
                                TiledMapTileLayer buildableLayer,
-                               GameTimer gameTimer) {
+                               GameTimer gameTimer, PausePopup pausePopup) {
         this.gameTimer = gameTimer;
         this.camera = camera;
         this.buildableLayer = buildableLayer;
+        this.pausePopup = pausePopup;
     }
 
     @Override
@@ -31,8 +33,10 @@ public class GameInputProcessor implements InputProcessor {
         if (keycode == Input.Keys.P) {
             if (gameTimer.isPaused()) {
                 gameTimer.resumeTime();
+                pausePopup.hide();
             } else {
                 gameTimer.pauseTime();
+                pausePopup.show();
             }
             return true;
         }
@@ -47,6 +51,9 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (pausePopup.isVisible()) {
+            return true;
+        }
         checkBuildable(screenX, screenY);
         return false;
     }
@@ -97,7 +104,6 @@ public class GameInputProcessor implements InputProcessor {
      * @return true if a buildable tile exists, false otherwise.
      */
     public boolean isTileBuildable(int x, int y) {
-
         TiledMapTileLayer.Cell cell = buildableLayer.getCell(x, y);
         return cell != null;
     }

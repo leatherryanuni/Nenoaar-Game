@@ -1,11 +1,17 @@
 package com.badlogic.unisim;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.ScreenUtils;
 
 public class EndScreen implements Screen {
+    private final UniSimGame game;
+    OrthographicCamera camera;
 
     public EndScreen(UniSimGame game) {
-
+        this.game = game;
+        camera = new OrthographicCamera();
     }
 
     @Override
@@ -15,7 +21,11 @@ public class EndScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        ScreenUtils.clear(Color.BLACK);
+        camera.update();
 
+        game.batch.begin();
+        game.batch.end();
     }
 
     @Override

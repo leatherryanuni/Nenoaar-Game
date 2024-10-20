@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -20,10 +19,10 @@ public class GameScreen implements Screen {
     private final UniSimGame game;
     private final GameTimer gameTimer;
     private OrthographicCamera camera;
-    private BitmapFont font;
     private FitViewport viewport;
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
+    private final PausePopup pausePopup;
 
     //private final int MAP_WIDTH = 1920;
     //private final int MAP_HEIGHT = 1056;
@@ -31,6 +30,7 @@ public class GameScreen implements Screen {
     public GameScreen(UniSimGame game) {
         this.game = game;
         this.gameTimer = new GameTimer(5);
+        this.pausePopup = new PausePopup(game);
     }
 
     @Override
@@ -46,12 +46,12 @@ public class GameScreen implements Screen {
         TiledMapTileLayer buildableLayer = (TiledMapTileLayer) tiledMap.getLayers().get("BuildableLayer");
         // Create a map renderer to be able to render the map in game.
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-        // Placeholder
-        font = new BitmapFont();
         // Set up InputProcessor containing collision detection and initialise game timer
-        GameInputProcessor inputProcessor = new GameInputProcessor(camera, buildableLayer, gameTimer);
+        GameInputProcessor inputProcessor = new GameInputProcessor(game, camera,
+                                            buildableLayer, gameTimer, pausePopup);
         Gdx.input.setInputProcessor(inputProcessor);
-
+        // Game starts paused.
+        pausePopup.show();
     }
 
     @Override
@@ -65,15 +65,15 @@ public class GameScreen implements Screen {
         }
         // Clear the screen
         ScreenUtils.clear(Color.BLACK);
-        camera.update();
         // Set the camera to the map renderer to make the map visible.
         mapRenderer.setView(camera);
         mapRenderer.render();
 
         game.batch.begin();
         // Display the timer on-screen
-        font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
+        game.font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
             10, 20);
+        pausePopup.draw(game.batch);
         game.batch.end();
     }
 
@@ -103,6 +103,7 @@ public class GameScreen implements Screen {
         // Destroy screen's assets here when we switch to the EndScreen.
         tiledMap.dispose();
         mapRenderer.dispose();
+        pausePopup.dispose();
     }
 
 }

@@ -28,5 +28,7 @@ public class UniSimGame extends Game {
         // Dispose of recourses that are no longer needed when e.g changing
         // screens to prevent memory leaks.
         batch.dispose();
+        font.dispose();
+        super.dispose();
     }
 }
