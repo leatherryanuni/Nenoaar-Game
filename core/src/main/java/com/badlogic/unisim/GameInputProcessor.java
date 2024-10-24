@@ -4,26 +4,21 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.Vector3;
 
 /**
  * This class processes all the inputs executed by the user when interacting
  * with the in-game map, which will mostly be mouse clicks.
- * Additionally, this class is responsible for detecting collisions when clicking
- * on non-buildable areas of the map.
  */
 public class GameInputProcessor implements InputProcessor {
     private final GameTimer gameTimer;
-    private final OrthographicCamera camera;
-    private final TiledMapTileLayer buildableLayer;
     private final PausePopup pausePopup;
+    private final CollisionDetector collisionDetector;
 
     public GameInputProcessor (UniSimGame game, OrthographicCamera camera,
                                TiledMapTileLayer buildableLayer,
                                GameTimer gameTimer, PausePopup pausePopup) {
+        collisionDetector = new CollisionDetector(camera, buildableLayer);
         this.gameTimer = gameTimer;
-        this.camera = camera;
-        this.buildableLayer = buildableLayer;
         this.pausePopup = pausePopup;
     }
 
@@ -51,11 +46,8 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (pausePopup.isVisible()) {
-            return true;
-        }
-        checkBuildable(screenX, screenY);
-        return false;
+        //collisionDetector.checkBuildable(screenX, screenY);
+        return pausePopup.isVisible();
     }
 
     @Override
@@ -75,37 +67,5 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean scrolled(float amountX, float amountY) { return false; }
-
-    /**
-     * Checks if the clicked tile is buildable.
-     * @param screenX x-coordinate of the mouse on the screen
-     * @param screenY y-coordinate of the mouse on the screen
-     */
-    public void checkBuildable (int screenX, int screenY) {
-        Vector3 mousePosition = new Vector3(screenX, screenY, 0);
-        // Convert mouse position to map coordinates
-        camera.unproject(mousePosition);
-        // Convert mouse coordinates to corresponding tile coordinates
-        int tileX = (int) (mousePosition.x / buildableLayer.getTileWidth());
-        int tileY = (int) (mousePosition.y / buildableLayer.getTileHeight());
-
-        if ((isTileBuildable(tileX, tileY))) {
-            System.out.println("Tile is buildable at (" + tileX + ", " + tileY + ")");
-        } else {
-            System.out.println("Tile is not buildable at (" + tileX + ", " + tileY + ")");
-        }
-    }
-
-    /**
-     * Checks if a tile is buildable by verifying whether such a tile exists
-     * in the collision layer of the map.
-     * @param x x-coordinate of the tile in the layer.
-     * @param y y-coordinate of the tile in the layer.
-     * @return true if a buildable tile exists, false otherwise.
-     */
-    public boolean isTileBuildable(int x, int y) {
-        TiledMapTileLayer.Cell cell = buildableLayer.getCell(x, y);
-        return cell != null;
-    }
 
 }
