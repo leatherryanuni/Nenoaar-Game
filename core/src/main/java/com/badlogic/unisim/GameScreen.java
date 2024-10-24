@@ -4,12 +4,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class handles all the game logic and visuals for the main game screen
@@ -23,6 +29,8 @@ public class GameScreen implements Screen {
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
     private final PausePopup pausePopup;
+    private List<Student> students;
+    private int maxNumStudents = 10;
 
     //private final int MAP_WIDTH = 1920;
     //private final int MAP_HEIGHT = 1056;
@@ -31,6 +39,7 @@ public class GameScreen implements Screen {
         this.game = game;
         this.gameTimer = new GameTimer(5);
         this.pausePopup = new PausePopup(game);
+        this.students = new ArrayList<>();
     }
 
     @Override
@@ -74,6 +83,12 @@ public class GameScreen implements Screen {
         game.font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
             10, 20);
         pausePopup.draw(game.batch);
+        if (students.size() < maxNumStudents) {
+            students.add(new Student());
+        }
+        for (Student student : students) {
+            student.sprite.draw(game.batch);
+        }
         game.batch.end();
     }
 
