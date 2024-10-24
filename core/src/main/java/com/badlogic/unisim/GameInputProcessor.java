@@ -46,7 +46,7 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        //collisionDetector.checkBuildable(screenX, screenY);
+        collisionDetector.checkBuildable(screenX, screenY);
         return pausePopup.isVisible();
     }
 

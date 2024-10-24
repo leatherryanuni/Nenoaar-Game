@@ -33,7 +33,6 @@ public class BuildingUIManager {
         Table buildingTable = new Table();
         buildingTable.top();
         buildingTable.padBottom(40);
-        buildingTable.setName("BUILDING TABLE");
         //buildingTable.debug();
 
         addImagesToTable(buildingTable, buildingButtons, buildingTextures,
@@ -47,7 +46,6 @@ public class BuildingUIManager {
         scrollPane.setFadeScrollBars(false);
         //scrollPane.setFillParent(true);
         scrollPane.setSize(440, 320);
-        scrollPane.setName("SCROLLPANE");
         //scrollPane.debug();
 
         Table mainTable = new Table();
@@ -71,23 +69,13 @@ public class BuildingUIManager {
                                   Texture[] buildingTextures, Label[] buildingLabels,
                                   String[] buildingNames) {
         for (int i = 0; i < buildingTextures.length; i++) {
-            Drawable buildingDrawable = new TextureRegionDrawable(new TextureRegion(buildingTextures[i]));
-            ImageButton.ImageButtonStyle buttonStyle = new ImageButton.ImageButtonStyle();
-            buttonStyle.up = skin.getDrawable("button");
-            buttonStyle.down = skin.getDrawable("button-down");
-            buttonStyle.imageUp = buildingDrawable;
-            // Create image object for each texture in the provided array
-            buildingButtons[i] = new ImageButton(buttonStyle);
-            buildingButtons[i].setName("BUTTON");
+            // Style the image buttons
+            buildingButtons[i] = createStyledImageButton(buildingTextures[i], skin);
             // Create label for each building
             buildingLabels[i] = new Label(buildingNames[i], skin);
-            buildingLabels[i].setName("LABEL");
-            Table imageLabelTable = new Table();
-            imageLabelTable.add(buildingButtons[i]);
-            imageLabelTable.row();
-            imageLabelTable.add(buildingLabels[i]).padTop(5);
-            imageLabelTable.setName("IMG+LABEL TABLE");
-            // Add the image object to the table
+            // Create image-label table
+            Table imageLabelTable = createImageLabelTable(buildingLabels[i], buildingButtons[i]);
+            // Add the table of image-label pairs to the buildings table
             table.add(imageLabelTable).pad(20);
         }
     }
@@ -102,11 +90,40 @@ public class BuildingUIManager {
             buildingButtons[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    System.out.println("Clicked on building:" + buildingNames[finalI]);
+                    System.out.println("Clicked on building: " + buildingNames[finalI]);
                     // To-do: implement interaction logic
                 }
             });
         }
+    }
+
+    /**
+     * Creates and styles a new ImageButton object using the building texture and a ui skin.
+     * @param buildingTexture The texture of the building.
+     * @param skin collection of assets to style a UI component.
+     * @return new ImageButton implementing the ui skins and building texture.
+     */
+    private ImageButton createStyledImageButton(Texture buildingTexture, Skin skin) {
+        Drawable buildingDrawable = new TextureRegionDrawable(new TextureRegion(buildingTexture));
+        ImageButton.ImageButtonStyle buttonStyle = new ImageButton.ImageButtonStyle();
+        buttonStyle.up = skin.getDrawable("button");
+        buttonStyle.down = skin.getDrawable("button-down");
+        buttonStyle.imageUp = buildingDrawable;
+        return new ImageButton(buttonStyle);
+    }
+
+    /**
+     * Creates a table containing image-label pairs.
+     * @param buildingLabel the name of the building.
+     * @param buildingButton button containing the image of the building.
+     * @return the table containing image-label pairs.
+     */
+    private Table createImageLabelTable(Label buildingLabel, ImageButton buildingButton ) {
+        Table imageLabelTable = new Table();
+        imageLabelTable.add(buildingButton);
+        imageLabelTable.row();
+        imageLabelTable.add(buildingLabel).padTop(5);
+        return imageLabelTable;
     }
 
     public void dispose() {

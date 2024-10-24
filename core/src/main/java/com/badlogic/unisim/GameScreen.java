@@ -46,7 +46,7 @@ public class GameScreen implements Screen {
         TiledMapTileLayer buildableLayer = (TiledMapTileLayer) tiledMap.getLayers().get("BuildableLayer");
         // Create a map renderer to be able to render the map in game.
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-
+        // Create stage
         Stage stage = new Stage(viewport);
         // Load UI
         uiManager = new UIManager(game, viewport, stage);
