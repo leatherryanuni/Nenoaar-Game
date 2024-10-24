@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="60" height="33" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="1">
- <tileset firstgid="1" source="colony-grounds.tsx"/>
- <tileset firstgid="1021" source="colony-other.tsx"/>
+ <tileset firstgid="1" source="../tilesets/colony-grounds.tsx"/>
+ <tileset firstgid="1021" source="../tilesets/colony-other.tsx"/>
  <layer id="2" name="Tile Layer 1" width="60" height="33">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,362,362,362,362,362,362,362,363,422,421,421,381,349,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,362,
