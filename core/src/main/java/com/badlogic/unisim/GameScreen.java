@@ -1,21 +1,17 @@
 package com.badlogic.unisim;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class handles all the game logic and visuals for the main game screen
@@ -24,22 +20,17 @@ public class GameScreen implements Screen {
     // Reference the main game class to communicate with main game manager.
     private final UniSimGame game;
     private final GameTimer gameTimer;
+    private final PausePopup pausePopup;
+    private UIManager uiManager;
     private OrthographicCamera camera;
     private FitViewport viewport;
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
-    private final PausePopup pausePopup;
-    private List<Student> students;
-    private int maxNumStudents = 10;
-
-    //private final int MAP_WIDTH = 1920;
-    //private final int MAP_HEIGHT = 1056;
 
     public GameScreen(UniSimGame game) {
         this.game = game;
         this.gameTimer = new GameTimer(5);
         this.pausePopup = new PausePopup(game);
-        this.students = new ArrayList<>();
     }
 
     @Override
@@ -51,14 +42,22 @@ public class GameScreen implements Screen {
         camera = new OrthographicCamera();
         viewport = new FitViewport(MAP_WIDTH, MAP_HEIGHT, camera);
         // Load map and 'buildable' layer
-        tiledMap = new TmxMapLoader().load("MarsMap.tmx");
+        tiledMap = new TmxMapLoader().load("map/MarsMap.tmx");
         TiledMapTileLayer buildableLayer = (TiledMapTileLayer) tiledMap.getLayers().get("BuildableLayer");
         // Create a map renderer to be able to render the map in game.
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+        Stage stage = new Stage(viewport);
+        // Load UI
+        uiManager = new UIManager(game, viewport, stage);
         // Set up InputProcessor containing collision detection and initialise game timer
-        GameInputProcessor inputProcessor = new GameInputProcessor(game, camera,
+        GameInputProcessor gameInputProcessor = new GameInputProcessor(game, camera,
                                             buildableLayer, gameTimer, pausePopup);
-        Gdx.input.setInputProcessor(inputProcessor);
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(stage); // Add stage as input processor for UI
+        inputMultiplexer.addProcessor(gameInputProcessor); // Add game input processor
+        // Set the InputMultiplexer as the input processor
+        Gdx.input.setInputProcessor(inputMultiplexer);
         // Game starts paused.
         pausePopup.show();
     }
@@ -68,27 +67,24 @@ public class GameScreen implements Screen {
         // Draw your screen here. "delta" is the time since last render in seconds.
         // Update timer
         gameTimer.updateTime(delta);
-        // Check if the timer has ended, end the game once it has.
+        // Check if the timer has ended, end the game once it has
         if (gameTimer.isTimeEnded()) {
             game.setScreen(new EndScreen(game));
         }
         // Clear the screen
         ScreenUtils.clear(Color.BLACK);
-        // Set the camera to the map renderer to make the map visible.
+        // Set the camera to the map renderer to make the map visible
         mapRenderer.setView(camera);
         mapRenderer.render();
+
+        uiManager.renderUI(delta);
 
         game.batch.begin();
         // Display the timer on-screen
         game.font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
             10, 20);
+        // Display the pause popup on-screen
         pausePopup.draw(game.batch);
-        if (students.size() < maxNumStudents) {
-            students.add(new Student());
-        }
-        for (Student student : students) {
-            student.sprite.draw(game.batch);
-        }
         game.batch.end();
     }
 
@@ -119,6 +115,7 @@ public class GameScreen implements Screen {
         tiledMap.dispose();
         mapRenderer.dispose();
         pausePopup.dispose();
+        uiManager.dispose();
     }
 
 }

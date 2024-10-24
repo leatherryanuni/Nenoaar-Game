@@ -16,7 +16,7 @@ public class GameTimer {
 
     /**
      * Updates the timer by reducing by delta time if not paused.
-     * @param deltaTime the time passed since the last frame in seconds.
+     * @param deltaTime the time since the last render in seconds.
      */
     public void updateTime(float deltaTime) {
         if (!isPaused && remainingTime > 0) {
@@ -27,13 +27,9 @@ public class GameTimer {
         }
     }
 
-    public void pauseTime() {
-        isPaused = true;
-    }
+    public void pauseTime() { isPaused = true; }
 
-    public void resumeTime() {
-        isPaused = false;
-    }
+    public void resumeTime() { isPaused = false; }
 
     /**
      * Checks if the timer has run out.
@@ -43,6 +39,10 @@ public class GameTimer {
         return remainingTime <= 0;
     }
 
+    /**
+     * Checks if the game is paused or not.
+     * @return true if the game is paused, otherwise false.
+     */
     public boolean isPaused() {
         return isPaused;
     }
