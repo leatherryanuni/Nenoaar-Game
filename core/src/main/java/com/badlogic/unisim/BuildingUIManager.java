@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 public class BuildingUIManager {
     private final Texture[] buildingTextures;
     private final Skin skin;
+    private final ScrollPane scrollPane;
 
     public BuildingUIManager(Stage stage) {
         this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
@@ -24,48 +25,51 @@ public class BuildingUIManager {
             new Texture("building-textures/sleep-motel-mars.png"),
             new Texture("building-textures/recreation-bowling.png"),
         };
-        //Image[] buildingImages = new Image[buildingTextures.length];
+
         ImageButton[] buildingButtons = new ImageButton[buildingTextures.length];
         Label[] buildingLabels = new Label[buildingTextures.length];
-        String[] buildingNames = {"Potato Shop", "Space science dept.", "Motel Mars",
+        String[] buildingNames = {"Potato Shop", "Space science", "Motel Mars",
                                   "Zero-g bowling"};
 
         Table buildingTable = new Table();
-        buildingTable.top();
-        buildingTable.padBottom(40);
-        //buildingTable.debug();
 
         addImagesToTable(buildingTable, buildingButtons, buildingTextures,
                          buildingLabels, buildingNames);
         addClickListenerToImageButtons(buildingButtons, buildingNames);
-
         buildingTable.pack();
+        buildingTable.padTop(30).padBottom(30);
 
-        ScrollPane scrollPane = new ScrollPane(buildingTable, skin);
-        scrollPane.setScrollingDisabled(false, true);
-        scrollPane.setFadeScrollBars(false);
-        //scrollPane.setFillParent(true);
-        scrollPane.setSize(440, 320);
-        //scrollPane.debug();
+        this.scrollPane = new ScrollPane(buildingTable, skin);
+        scrollPane.pack();
+        scrollPane.setVisible(false);
 
         Table mainTable = new Table();
-        mainTable.bottom().right();
         mainTable.setFillParent(true);
-        mainTable.add(scrollPane);
-        //mainTable.debug();
+        mainTable.add(scrollPane).center();
 
         stage.addActor(mainTable);
-        //checkHierarchy(stage);
+    }
+
+    public boolean isVisible() {
+        return scrollPane.isVisible();
+    }
+
+    public void showBuildingMenu() {
+        scrollPane.setVisible(true);
+    }
+
+    public void hideBuildingMenu() {
+        scrollPane.setVisible(false);
     }
 
     /**
      * Adds image buttons to a table using an array of textures
-     * @param table The table that will contain the images.
+     * @param buildingTable The table that will contain the images.
      * @param buildingButtons An array containing ImageButton objects created from
      *                       the building textures.
      * @param buildingTextures An array containing the textures of each building
      */
-    private void addImagesToTable(Table table, ImageButton[] buildingButtons,
+    private void addImagesToTable(Table buildingTable, ImageButton[] buildingButtons,
                                   Texture[] buildingTextures, Label[] buildingLabels,
                                   String[] buildingNames) {
         for (int i = 0; i < buildingTextures.length; i++) {
@@ -76,24 +80,12 @@ public class BuildingUIManager {
             // Create image-label table
             Table imageLabelTable = createImageLabelTable(buildingLabels[i], buildingButtons[i]);
             // Add the table of image-label pairs to the buildings table
-            table.add(imageLabelTable).pad(20);
-        }
-    }
-
-    /**
-     * Adds a click listener to each ImageButton object.
-     * @param buildingButtons An array of ImageButton objects
-     */
-    private void addClickListenerToImageButtons(ImageButton[] buildingButtons, String[] buildingNames) {
-        for (int i = 0; i < buildingButtons.length; i++) {
-            int finalI = i;
-            buildingButtons[i].addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    System.out.println("Clicked on building: " + buildingNames[finalI]);
-                    // To-do: implement interaction logic
-                }
-            });
+            buildingTable.add(imageLabelTable);
+            // As we want a max of 5 buildings per row in our table,
+            // every 5th index in the building textures list, we create a new row.
+            if ((i + 1) % 5 == 0) {
+                buildingTable.row();
+            }
         }
     }
 
@@ -120,10 +112,31 @@ public class BuildingUIManager {
      */
     private Table createImageLabelTable(Label buildingLabel, ImageButton buildingButton ) {
         Table imageLabelTable = new Table();
+        // Add building button to top row
         imageLabelTable.add(buildingButton);
+        // Indicate that subsequent additions are put into a row below the first.
         imageLabelTable.row();
-        imageLabelTable.add(buildingLabel).padTop(5);
+        // Add the label for the button in the row below.
+        imageLabelTable.add(buildingLabel);
+        imageLabelTable.pad(10);
         return imageLabelTable;
+    }
+
+    /**
+     * Adds a click listener to each ImageButton object.
+     * @param buildingButtons An array of ImageButton objects
+     */
+    private void addClickListenerToImageButtons(ImageButton[] buildingButtons, String[] buildingNames) {
+        for (int i = 0; i < buildingButtons.length; i++) {
+            int finalI = i;
+            buildingButtons[i].addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    System.out.println("Clicked on building: " + buildingNames[finalI]);
+                    // To-do: implement interaction logic
+                }
+            });
+        }
     }
 
     public void dispose() {

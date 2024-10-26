@@ -1,7 +1,5 @@
 package com.badlogic.unisim;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
 /**
  * This class is responsible for displaying and hiding a message, indicating
  * whether the game is paused or not.
@@ -11,7 +9,7 @@ public class PausePopup implements PopUp {
     private boolean isVisible;
 
     public PausePopup(UniSimGame game) {
-        this.isVisible = false;
+        this.isVisible = true;
         this.game = game;
     }
 
@@ -31,12 +29,12 @@ public class PausePopup implements PopUp {
 
     /**
      * 'Draws' the paused message on the screen if the game is paused.
-     * @param batch the SpriteBatch object used for rendering the message.
+     *  SpriteBatch object used for rendering the message.
      */
-    public void draw(SpriteBatch batch) {
+    public void draw() {
         if (isVisible()) {
             int MESSAGE_POSITION_X = 285;
-            int MESSAGE_POSITION_Y = 260;
+            int MESSAGE_POSITION_Y = 250;
             String pausedMessage = "Game Paused. Press P to resume.";
             game.font.draw(game.batch, pausedMessage, MESSAGE_POSITION_X, MESSAGE_POSITION_Y);
         }

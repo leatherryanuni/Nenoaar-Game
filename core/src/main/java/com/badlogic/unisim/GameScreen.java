@@ -49,17 +49,17 @@ public class GameScreen implements Screen {
         // Create stage
         Stage stage = new Stage(viewport);
         // Load UI
-        uiManager = new UIManager(game, viewport, stage);
-        // Set up InputProcessor containing collision detection and initialise game timer
-        GameInputProcessor gameInputProcessor = new GameInputProcessor(game, camera,
-                                            buildableLayer, gameTimer, pausePopup);
+        uiManager = new UIManager(game, stage);
+        // Load input processor for the game.
+        GameInputProcessor gameInputProcessor = new GameInputProcessor(camera,
+                                            buildableLayer, gameTimer, pausePopup, uiManager);
+        // As we need an additional input processor for UI elements, we can
+        // combine the two input processors in an input multiplexer.
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(stage); // Add stage as input processor for UI
-        inputMultiplexer.addProcessor(gameInputProcessor); // Add game input processor
-        // Set the InputMultiplexer as the input processor
+        inputMultiplexer.addProcessor(stage);
+        inputMultiplexer.addProcessor(gameInputProcessor);
+        // Set the InputMultiplexer as the main input processor
         Gdx.input.setInputProcessor(inputMultiplexer);
-        // Game starts paused.
-        pausePopup.show();
     }
 
     @Override
@@ -84,7 +84,9 @@ public class GameScreen implements Screen {
         game.font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
             10, 20);
         // Display the pause popup on-screen
-        pausePopup.draw(game.batch);
+        pausePopup.draw();
+        // Display building menu prompt on-screen
+        uiManager.drawBuildingMenuPrompt();
         game.batch.end();
     }
 

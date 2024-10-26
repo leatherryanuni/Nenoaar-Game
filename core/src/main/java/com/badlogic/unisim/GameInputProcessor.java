@@ -10,30 +10,45 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
  * with the in-game map, which will mostly be mouse clicks.
  */
 public class GameInputProcessor implements InputProcessor {
+    private final UIManager uiManager;
     private final GameTimer gameTimer;
     private final PausePopup pausePopup;
     private final CollisionDetector collisionDetector;
 
-    public GameInputProcessor (UniSimGame game, OrthographicCamera camera,
+    public GameInputProcessor (OrthographicCamera camera,
                                TiledMapTileLayer buildableLayer,
-                               GameTimer gameTimer, PausePopup pausePopup) {
+                               GameTimer gameTimer, PausePopup pausePopup, UIManager uiManager) {
         collisionDetector = new CollisionDetector(camera, buildableLayer);
         this.gameTimer = gameTimer;
         this.pausePopup = pausePopup;
+        this.uiManager = uiManager;
     }
 
     @Override
     public boolean keyDown (int keycode) {
-        // The key 'P' allows pausing and resuming in-game
+        // The key 'P' allows pausing and resuming in-game.
         if (keycode == Input.Keys.P) {
             if (gameTimer.isPaused()) {
                 gameTimer.resumeTime();
                 pausePopup.hide();
+                uiManager.showBuildingMenuPrompt();
             } else {
                 gameTimer.pauseTime();
                 pausePopup.show();
+                uiManager.hideBuildingMenuPrompt();
+                uiManager.hideBuildingMenu();
             }
             return true;
+        }
+        if (keycode == Input.Keys.M) {
+            // The key 'M' allows closing and opening the building menu.
+            // Cannot open building menu if game is paused, so return false.
+            if (gameTimer.isPaused()) { return false; }
+            if (uiManager.isBuildingMenuVisible()) {
+                uiManager.hideBuildingMenu();
+            } else {
+                uiManager.showBuildingMenu();
+            }
         }
         return false;
     }

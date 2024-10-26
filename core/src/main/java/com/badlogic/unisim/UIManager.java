@@ -3,7 +3,6 @@ package com.badlogic.unisim;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 
 /**
  * This class is responsible for the overall UI of the GameScreen, containing
@@ -11,16 +10,20 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
  */
 public class UIManager {
     private final Skin skin;
+    private final UniSimGame game;
     private final Stage stage;
-    private BuildingUIManager buildingUIManager;
+    private final BuildingUIManager buildingUIManager;
+    private boolean isBuildingMenuPromptVisible;
 
-    public UIManager(UniSimGame game, FitViewport viewport, Stage stage) {
-        //stage = new Stage(viewport);//new FitViewport(64, 64));
+    public UIManager(UniSimGame game, Stage stage) {
+        this.game = game;
         this.stage = stage;
         // Load the skin which is like a texture for UI elements
         skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
+        // Hide building menu prompt on start of game
+        this.isBuildingMenuPromptVisible = false;
         // Instantiate UI for building selection
-        BuildingUIManager buildingUIManager = new BuildingUIManager(stage);
+        buildingUIManager = new BuildingUIManager(stage);
     }
 
     /**
@@ -36,6 +39,35 @@ public class UIManager {
         stage.dispose();
         skin.dispose();
         buildingUIManager.dispose();
+    }
+
+    public void showBuildingMenuPrompt() {
+        isBuildingMenuPromptVisible = true;
+    }
+
+    public void hideBuildingMenuPrompt() {
+        isBuildingMenuPromptVisible = false;
+    }
+
+    public void drawBuildingMenuPrompt() {
+        if (isBuildingMenuPromptVisible) {
+            float PROMPT_POSITION_X = 620;
+            float PROMPT_POSITION_Y = 20;
+            String promptMessage = "Press M for Building Menu";
+            game.font.draw(game.batch, promptMessage, PROMPT_POSITION_X, PROMPT_POSITION_Y);
+        }
+    }
+
+    public void showBuildingMenu() {
+        buildingUIManager.showBuildingMenu();
+    }
+
+    public void hideBuildingMenu() {
+        buildingUIManager.hideBuildingMenu();
+    }
+
+    public boolean isBuildingMenuVisible() {
+        return buildingUIManager.isVisible();
     }
 }
 
