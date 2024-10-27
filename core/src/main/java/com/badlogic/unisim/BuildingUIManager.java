@@ -96,10 +96,15 @@ public class BuildingUIManager {
      * @return new ImageButton implementing the ui skins and building texture.
      */
     private ImageButton createStyledImageButton(Texture buildingTexture, Skin skin) {
+        // Create a texture region and wrap it in a drawable, allowing the
+        // image to be used inside an image button.
         Drawable buildingDrawable = new TextureRegionDrawable(new TextureRegion(buildingTexture));
+        // ImageButtonStyle is responsible for how the button's visuals change
+        // from its default state to its clicked (button-down) state.
         ImageButton.ImageButtonStyle buttonStyle = new ImageButton.ImageButtonStyle();
         buttonStyle.up = skin.getDrawable("button");
         buttonStyle.down = skin.getDrawable("button-down");
+        // Set the image for the button.
         buttonStyle.imageUp = buildingDrawable;
         return new ImageButton(buttonStyle);
     }
