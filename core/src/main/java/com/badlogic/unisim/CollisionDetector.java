@@ -27,6 +27,7 @@ public class CollisionDetector {
         // Convert mouse position to map coordinates
         camera.unproject(mousePosition);
         // Convert mouse coordinates to corresponding tile coordinates
+        System.out.println(mousePosition.x + " " + mousePosition.y);
         int tileX = (int) (mousePosition.x / buildableLayer.getTileWidth());
         int tileY = (int) (mousePosition.y / buildableLayer.getTileHeight());
 
