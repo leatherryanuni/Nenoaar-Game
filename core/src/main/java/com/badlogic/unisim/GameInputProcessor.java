@@ -2,8 +2,6 @@ package com.badlogic.unisim;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 
 /**
  * This class processes all the inputs executed by the user when interacting
