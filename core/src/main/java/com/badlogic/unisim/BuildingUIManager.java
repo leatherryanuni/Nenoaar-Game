@@ -1,11 +1,9 @@
 package com.badlogic.unisim;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
@@ -13,17 +11,35 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
  * This class is responsible for building selection UI elements.
  */
 public class BuildingUIManager {
+    private final UniSimGame game;
     private final Texture[] buildingTextures;
-    private final Skin skin;
+    private final Texture[] buildableBuildingTextures;
+    private final Texture[] nonBuildableBuildingTextures;
     private final ScrollPane scrollPane;
+    private final BuildingPlacer buildingPlacer;
 
-    public BuildingUIManager(Stage stage) {
-        this.skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
+    public BuildingUIManager(UniSimGame game, Stage stage, BuildingPlacer buildingPlacer) {
+        this.game = game;
+        this.buildingPlacer = buildingPlacer;
         buildingTextures = new Texture[] {
             new Texture("building-textures/eat-potato-shop.png"),
             new Texture("building-textures/learn-space-science.png"),
             new Texture("building-textures/sleep-motel-mars.png"),
             new Texture("building-textures/recreation-bowling.png"),
+        };
+
+        buildableBuildingTextures = new Texture[] {
+            new Texture("building-textures-buildable/eat-potato-shop-buildable.png"),
+            new Texture("building-textures-buildable/learn-space-science-buildable.png"),
+            new Texture("building-textures-buildable/sleep-motel-mars-buildable.png"),
+            new Texture("building-textures-buildable/recreation-bowling-buildable.png"),
+        };
+
+        nonBuildableBuildingTextures = new Texture[] {
+            new Texture("building-textures-nonbuildable/eat-potato-shop-nonbuildable.png"),
+            new Texture("building-textures-nonbuildable/learn-space-science-nonbuildable.png"),
+            new Texture("building-textures-nonbuildable/sleep-motel-mars-nonbuildable.png"),
+            new Texture("building-textures-nonbuildable/recreation-bowling-nonbuildable.png"),
         };
 
         ImageButton[] buildingButtons = new ImageButton[buildingTextures.length];
@@ -35,11 +51,11 @@ public class BuildingUIManager {
 
         addImagesToTable(buildingTable, buildingButtons, buildingTextures,
                          buildingLabels, buildingNames);
-        addClickListenerToImageButtons(buildingButtons, buildingNames);
+        addClickListenerToImageButtons(buildingButtons);
         buildingTable.pack();
         buildingTable.padTop(30).padBottom(30);
 
-        this.scrollPane = new ScrollPane(buildingTable, skin);
+        this.scrollPane = new ScrollPane(buildingTable, game.skin);
         scrollPane.pack();
         scrollPane.setVisible(false);
 
@@ -74,9 +90,9 @@ public class BuildingUIManager {
                                   String[] buildingNames) {
         for (int i = 0; i < buildingTextures.length; i++) {
             // Style the image buttons
-            buildingButtons[i] = createStyledImageButton(buildingTextures[i], skin);
+            buildingButtons[i] = createStyledImageButton(buildingTextures[i], game.skin);
             // Create label for each building
-            buildingLabels[i] = new Label(buildingNames[i], skin);
+            buildingLabels[i] = new Label(buildingNames[i], game.skin);
             // Create image-label table
             Table imageLabelTable = createImageLabelTable(buildingLabels[i], buildingButtons[i]);
             // Add the table of image-label pairs to the buildings table
@@ -131,22 +147,22 @@ public class BuildingUIManager {
      * Adds a click listener to each ImageButton object.
      * @param buildingButtons An array of ImageButton objects
      */
-    private void addClickListenerToImageButtons(ImageButton[] buildingButtons, String[] buildingNames) {
+    private void addClickListenerToImageButtons(ImageButton[] buildingButtons) {
         for (int i = 0; i < buildingButtons.length; i++) {
-            int finalI = i;
-            buildingButtons[i].addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    System.out.println("Clicked on building: " + buildingNames[finalI]);
-                    // To-do: implement interaction logic
-                }
-            });
+            buildingButtons[i].addListener(new BuildingClickListener(buildingPlacer,
+                                                                     buildingTextures[i],
+                                                                     buildableBuildingTextures[i],
+                                                                     nonBuildableBuildingTextures[i],
+                                                                     BuildingUIManager.this) {}
+            );
         }
     }
 
     public void dispose() {
-        for (Texture texture : buildingTextures) {
-            texture.dispose();
+        for (int i = 0; i < buildingTextures.length ; i++) {
+            buildingTextures[i].dispose();
+            buildableBuildingTextures[i].dispose();
+            nonBuildableBuildingTextures[i].dispose();
         }
     }
 }

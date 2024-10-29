@@ -2,8 +2,8 @@ package com.badlogic.unisim;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 /**
  * This class processes all the inputs executed by the user when interacting
@@ -13,15 +13,16 @@ public class GameInputProcessor implements InputProcessor {
     private final UIManager uiManager;
     private final GameTimer gameTimer;
     private final PausePopup pausePopup;
-    private final CollisionDetector collisionDetector;
+    private final BuildingPlacer buildingPlacer;
 
-    public GameInputProcessor (OrthographicCamera camera,
+    public GameInputProcessor (FitViewport viewport,
                                TiledMapTileLayer buildableLayer,
-                               GameTimer gameTimer, PausePopup pausePopup, UIManager uiManager) {
-        collisionDetector = new CollisionDetector(camera, buildableLayer);
+                               GameTimer gameTimer, PausePopup pausePopup,
+                               UIManager uiManager, BuildingPlacer buildingPlacer) {
         this.gameTimer = gameTimer;
         this.pausePopup = pausePopup;
         this.uiManager = uiManager;
+        this.buildingPlacer = buildingPlacer;
     }
 
     @Override
@@ -61,7 +62,6 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        collisionDetector.checkBuildable(screenX, screenY);
         return pausePopup.isVisible();
     }
 
@@ -76,7 +76,9 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        //checkBuildable(screenX, screenY);
+        if (buildingPlacer.isBuildingSelected) {
+            buildingPlacer.snapBuildingToGrid(screenX, screenY);
+        }
         return false;
     }
 

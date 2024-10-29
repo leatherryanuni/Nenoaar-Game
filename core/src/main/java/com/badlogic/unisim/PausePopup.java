@@ -33,8 +33,8 @@ public class PausePopup implements PopUp {
      */
     public void draw() {
         if (isVisible()) {
-            int MESSAGE_POSITION_X = 285;
-            int MESSAGE_POSITION_Y = 250;
+            int MESSAGE_POSITION_X = 650;
+            int MESSAGE_POSITION_Y = 560;
             String pausedMessage = "Game Paused. Press P to resume.";
             game.font.draw(game.batch, pausedMessage, MESSAGE_POSITION_X, MESSAGE_POSITION_Y);
         }

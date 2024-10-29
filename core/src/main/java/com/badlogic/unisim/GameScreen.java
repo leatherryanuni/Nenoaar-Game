@@ -22,10 +22,14 @@ public class GameScreen implements Screen {
     private final GameTimer gameTimer;
     private final PausePopup pausePopup;
     private UIManager uiManager;
+    private BuildingPlacer buildingPlacer;
     private OrthographicCamera camera;
     private FitViewport viewport;
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
+
+    float MAP_WIDTH = 1920;
+    float MAP_HEIGHT = 1056;
 
     public GameScreen(UniSimGame game) {
         this.game = game;
@@ -36,8 +40,6 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         // Prepare your screen here
-        int MAP_WIDTH = 1920;
-        int MAP_HEIGHT = 1056;
         // Initialise camera and viewport to fit the size of the map.
         camera = new OrthographicCamera();
         viewport = new FitViewport(MAP_WIDTH, MAP_HEIGHT, camera);
@@ -46,13 +48,16 @@ public class GameScreen implements Screen {
         TiledMapTileLayer buildableLayer = (TiledMapTileLayer) tiledMap.getLayers().get("BuildableLayer");
         // Create a map renderer to be able to render the map in game.
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        System.out.println(viewport.getScreenWidth() + "," + viewport.getScreenHeight());
         // Create stage
         Stage stage = new Stage(viewport);
+        buildingPlacer = new BuildingPlacer(game, viewport, buildableLayer);
         // Load UI
-        uiManager = new UIManager(game, stage);
+        uiManager = new UIManager(game, stage, buildingPlacer);
         // Load input processor for the game.
-        GameInputProcessor gameInputProcessor = new GameInputProcessor(camera,
-                                            buildableLayer, gameTimer, pausePopup, uiManager);
+        GameInputProcessor gameInputProcessor = new GameInputProcessor(viewport,
+                                            buildableLayer, gameTimer, pausePopup,
+                                            uiManager, buildingPlacer);
         // As we need an additional input processor for UI elements, we can
         // combine the two input processors in an input multiplexer.
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -65,6 +70,9 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         // Draw your screen here. "delta" is the time since last render in seconds.
+        viewport.apply();
+        camera.update();
+        game.batch.setProjectionMatrix(camera.combined);
         // Update timer
         gameTimer.updateTime(delta);
         // Check if the timer has ended, end the game once it has
@@ -81,12 +89,15 @@ public class GameScreen implements Screen {
 
         game.batch.begin();
         // Display the timer on-screen
+        buildingPlacer.attachBuildingToMouse();
+        game.font.getData().setScale(3.0f);
         game.font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
-            10, 20);
+                20, 40);
         // Display the pause popup on-screen
         pausePopup.draw();
         // Display building menu prompt on-screen
         uiManager.drawBuildingMenuPrompt();
+
         game.batch.end();
     }
 
@@ -94,6 +105,7 @@ public class GameScreen implements Screen {
     public void resize(int width, int height) {
         // Resize your screen here. The parameters represent the new window size.
         viewport.update(width, height, true);
+        camera.update();
     }
 
     @Override

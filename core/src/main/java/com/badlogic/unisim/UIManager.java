@@ -15,7 +15,7 @@ public class UIManager {
     private final BuildingUIManager buildingUIManager;
     private boolean isBuildingMenuPromptVisible;
 
-    public UIManager(UniSimGame game, Stage stage) {
+    public UIManager(UniSimGame game, Stage stage, BuildingPlacer buildingPlacer) {
         this.game = game;
         this.stage = stage;
         // Load the skin which is like a texture for UI elements
@@ -23,7 +23,8 @@ public class UIManager {
         // Hide building menu prompt on start of game
         this.isBuildingMenuPromptVisible = false;
         // Instantiate UI for building selection
-        buildingUIManager = new BuildingUIManager(stage);
+        buildingUIManager = new BuildingUIManager(game, stage, buildingPlacer);
+        // w
     }
 
     /**
@@ -51,8 +52,8 @@ public class UIManager {
 
     public void drawBuildingMenuPrompt() {
         if (isBuildingMenuPromptVisible) {
-            float PROMPT_POSITION_X = 620;
-            float PROMPT_POSITION_Y = 20;
+            float PROMPT_POSITION_X = 1410;
+            float PROMPT_POSITION_Y = 40;
             String promptMessage = "Press M for Building Menu";
             game.font.draw(game.batch, promptMessage, PROMPT_POSITION_X, PROMPT_POSITION_Y);
         }
