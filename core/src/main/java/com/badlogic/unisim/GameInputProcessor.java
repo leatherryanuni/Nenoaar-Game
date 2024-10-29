@@ -15,9 +15,7 @@ public class GameInputProcessor implements InputProcessor {
     private final PausePopup pausePopup;
     private final BuildingPlacer buildingPlacer;
 
-    public GameInputProcessor (FitViewport viewport,
-                               TiledMapTileLayer buildableLayer,
-                               GameTimer gameTimer, PausePopup pausePopup,
+    public GameInputProcessor (GameTimer gameTimer, PausePopup pausePopup,
                                UIManager uiManager, BuildingPlacer buildingPlacer) {
         this.gameTimer = gameTimer;
         this.pausePopup = pausePopup;

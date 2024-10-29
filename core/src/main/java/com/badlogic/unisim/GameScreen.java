@@ -55,8 +55,8 @@ public class GameScreen implements Screen {
         // Load UI
         uiManager = new UIManager(game, stage, buildingPlacer);
         // Load input processor for the game.
-        GameInputProcessor gameInputProcessor = new GameInputProcessor(viewport,
-                                            buildableLayer, gameTimer, pausePopup,
+        GameInputProcessor gameInputProcessor = new GameInputProcessor(
+                                            gameTimer, pausePopup,
                                             uiManager, buildingPlacer);
         // As we need an additional input processor for UI elements, we can
         // combine the two input processors in an input multiplexer.
