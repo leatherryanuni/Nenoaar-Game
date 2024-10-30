@@ -85,20 +85,22 @@ public class GameScreen implements Screen {
         mapRenderer.setView(camera);
         mapRenderer.render();
 
-        uiManager.renderUI(delta);
 
         game.batch.begin();
-        // Display the timer on-screen
+        buildingPlacer.drawBuildings();
         buildingPlacer.attachBuildingToMouse();
+        // Display the timer on-screen
         game.font.getData().setScale(3.0f);
         game.font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
                 20, 40);
-        // Display the pause popup on-screen
-        pausePopup.draw();
         // Display building menu prompt on-screen
         uiManager.drawBuildingMenuPrompt();
-
+        uiManager.drawBuildingCounter();
+        // Display the pause popup on-screen
+        pausePopup.draw();
         game.batch.end();
+
+        uiManager.renderUI(delta);
     }
 
     @Override
@@ -131,5 +133,4 @@ public class GameScreen implements Screen {
         pausePopup.dispose();
         uiManager.dispose();
     }
-
 }
