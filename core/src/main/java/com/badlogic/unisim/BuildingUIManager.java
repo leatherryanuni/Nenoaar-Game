@@ -1,5 +1,7 @@
 package com.badlogic.unisim;
 
+import java.util.HashMap;
+import java.util.Map;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.*;
@@ -8,60 +10,31 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
- * This class is responsible for building selection UI elements.
+ * This class is responsible for UI elements that allow building selection.
  */
 public class BuildingUIManager {
     private final UniSimGame game;
     private final Texture[] buildingTextures;
     private final Texture[] buildableBuildingTextures;
     private final Texture[] nonBuildableBuildingTextures;
+    private final String[] buildingNames;
+    private final Map<String, String> buildingNameToType;
     private final ScrollPane scrollPane;
     private final BuildingPlacer buildingPlacer;
 
     public BuildingUIManager(UniSimGame game, Stage stage, BuildingPlacer buildingPlacer) {
         this.game = game;
         this.buildingPlacer = buildingPlacer;
-        buildingTextures = new Texture[] {
-            new Texture("building-textures/eat-potato-shop.png"),
-            new Texture("building-textures/learn-space-science.png"),
-            new Texture("building-textures/sleep-motel-mars.png"),
-            new Texture("building-textures/recreation-bowling.png"),
-        };
-
-        buildableBuildingTextures = new Texture[] {
-            new Texture("building-textures-buildable/eat-potato-shop-buildable.png"),
-            new Texture("building-textures-buildable/learn-space-science-buildable.png"),
-            new Texture("building-textures-buildable/sleep-motel-mars-buildable.png"),
-            new Texture("building-textures-buildable/recreation-bowling-buildable.png"),
-        };
-
-        nonBuildableBuildingTextures = new Texture[] {
-            new Texture("building-textures-nonbuildable/eat-potato-shop-nonbuildable.png"),
-            new Texture("building-textures-nonbuildable/learn-space-science-nonbuildable.png"),
-            new Texture("building-textures-nonbuildable/sleep-motel-mars-nonbuildable.png"),
-            new Texture("building-textures-nonbuildable/recreation-bowling-nonbuildable.png"),
-        };
-
-        ImageButton[] buildingButtons = new ImageButton[buildingTextures.length];
-        Label[] buildingLabels = new Label[buildingTextures.length];
-        String[] buildingNames = {"Potato Shop", "Space science", "Motel Mars",
-                                  "Zero-g bowling"};
-
-        Table buildingTable = new Table();
-
-        addImagesToTable(buildingTable, buildingButtons, buildingTextures,
-                         buildingLabels, buildingNames);
-        addClickListenerToImageButtons(buildingButtons);
-        buildingTable.pack();
-        buildingTable.padTop(30).padBottom(30);
-
-        this.scrollPane = new ScrollPane(buildingTable, game.skin);
-        scrollPane.pack();
-        scrollPane.setVisible(false);
-
-        Table mainTable = new Table();
-        mainTable.setFillParent(true);
-        mainTable.add(scrollPane).center();
+        this.buildingTextures = loadBuildingTextures();
+        this.buildableBuildingTextures = loadBuildableTextures();
+        this.nonBuildableBuildingTextures = loadNonBuildableTextures();
+        this.buildingNames = new String[]{"Potato Shop", "Space science",
+                                            "Motel Mars", "Zero-g bowling"};
+        this.buildingNameToType = loadBuildingNameToType(buildingNames);
+        // Create all the tables required to organise UI elements
+        Table buildingTable = createBuildingTable(buildingNames);
+        this.scrollPane = createScrollPane(buildingTable);
+        Table mainTable = createMainTable(scrollPane);
 
         stage.addActor(mainTable);
     }
@@ -78,6 +51,107 @@ public class BuildingUIManager {
         scrollPane.setVisible(false);
     }
 
+    public int getBuildingCount() {
+        return buildingPlacer.getBuildingCount();
+    }
+
+    /**
+     * Creates an array of Texture objects that represent the building images.
+     * @return an array of Texture objects.
+     */
+    private Texture[] loadBuildingTextures() {
+        return new Texture[] {
+            new Texture("building-textures/eat-potato-shop.png"),
+            new Texture("building-textures/learn-space-science.png"),
+            new Texture("building-textures/sleep-motel-mars.png"),
+            new Texture("building-textures/recreation-bowling.png")
+        };
+    }
+
+    /**
+     * Creates an array of Texture objects that have a green tint to indicate
+     * a building can be placed in a given location on the map.
+     * @return an array of Texture objects.
+     */
+    private Texture[] loadBuildableTextures() {
+        return new Texture[] {
+            new Texture("building-textures-buildable/eat-potato-shop-buildable.png"),
+            new Texture("building-textures-buildable/learn-space-science-buildable.png"),
+            new Texture("building-textures-buildable/sleep-motel-mars-buildable.png"),
+            new Texture("building-textures-buildable/recreation-bowling-buildable.png")
+        };
+    }
+
+    /**
+     * Creates an array of Texture objects that have a red tint to indicate
+     * a building cannot be placed in a given location on the map.
+     * @return an array of Texture objects.
+     */
+    private Texture[] loadNonBuildableTextures() { // Building textures with a red tint to
+        return new Texture[] {                     // indicate a building cannot be placed
+            new Texture("building-textures-nonbuildable/eat-potato-shop-nonbuildable.png"),
+            new Texture("building-textures-nonbuildable/learn-space-science-nonbuildable.png"),
+            new Texture("building-textures-nonbuildable/sleep-motel-mars-nonbuildable.png"),
+            new Texture("building-textures-nonbuildable/recreation-bowling-nonbuildable.png")
+        };
+    }
+
+    private Map<String, String> loadBuildingNameToType(String[] buildingNames) {
+        String[] buildingTypes = {"eat", "learn", "sleep", "recreation"};
+        Map<String, String> buildingNameToType = new HashMap<>();
+        for (int i = 0; i < buildingNames.length; i++) {
+            buildingNameToType.put(buildingNames[i], buildingTypes[i]);
+        }
+        return buildingNameToType;
+    }
+
+    /**
+     * Creates a table containing a collection of labelled ImageButton objects with their
+     * corresponding buildings.
+     * @return a table containing labelled ImageButton objects.
+     */
+    private Table createBuildingTable(String[] buildingNames) {
+        ImageButton[] buildingButtons = new ImageButton[buildingTextures.length];
+        Label[] buildingLabels = new Label[buildingTextures.length];
+        Table buildingTable = new Table();
+        addImagesToTable(buildingTable, buildingButtons, buildingTextures,
+                         buildingLabels, buildingNames);
+        addClickListenerToImageButtons(buildingButtons);
+        buildingTable.pack();
+        buildingTable.padTop(30).padBottom(30);
+        return buildingTable;
+    }
+
+    /**
+     * Creates a scrollPane to contain the buildingTable, this acts as a visual
+     * container in the game screen.
+     * @param table contains the collection of ImageButton objects representing
+     *              each building.
+     * @return a scrollPane containing the collection of ImageButton objects.
+     */
+    private ScrollPane createScrollPane(Table table) {
+        ScrollPane scrollPane = new ScrollPane(table, game.skin);
+        scrollPane.pack();
+        // ScrollPane is set to invisible at first, so that it is not visible
+        // when the game screen is loaded.
+        scrollPane.setVisible(false);
+        return scrollPane;
+    }
+
+    /**
+     * Creates a table that contains the scrollPane.
+     * @param scrollPane a container consisting of the buildingTable.
+     * @return a table that contains the scrollPane for accurate positioning.
+     */
+    private Table createMainTable(ScrollPane scrollPane) {
+        Table mainTable = new Table();
+        // The mainTable being the size of the screen means the scrollPane
+        // can easily be centred.
+        mainTable.setFillParent(true);
+        mainTable.add(scrollPane).center();
+        return mainTable;
+    }
+
     /**
      * Adds image buttons to a table using an array of textures
      * @param buildingTable The table that will contain the images.
@@ -91,7 +165,7 @@ public class BuildingUIManager {
         for (int i = 0; i < buildingTextures.length; i++) {
             // Style the image buttons
             buildingButtons[i] = createStyledImageButton(buildingTextures[i], game.skin);
-            // Create label for each building
+            // Create label for each building using the names
             buildingLabels[i] = new Label(buildingNames[i], game.skin);
             // Create image-label table
             Table imageLabelTable = createImageLabelTable(buildingLabels[i], buildingButtons[i]);
@@ -153,7 +227,8 @@ public class BuildingUIManager {
                                                                      buildingTextures[i],
                                                                      buildableBuildingTextures[i],
                                                                      nonBuildableBuildingTextures[i],
-                                                                     BuildingUIManager.this) {}
+                                                                     BuildingUIManager.this,
+                                                                     buildingNameToType.get(buildingNames[i])) {}
             );
         }
     }
@@ -163,6 +238,7 @@ public class BuildingUIManager {
             buildingTextures[i].dispose();
             buildableBuildingTextures[i].dispose();
             nonBuildableBuildingTextures[i].dispose();
+            buildingPlacer.dispose();
         }
     }
 }
