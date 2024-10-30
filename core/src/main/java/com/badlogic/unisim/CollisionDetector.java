@@ -1,41 +1,48 @@
 package com.badlogic.unisim;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.math.Rectangle;
+
+import java.util.ArrayList;
 
 /**
  * This class is responsible for 'building to building' and 'building to map'
  * collision detection.
  */
 public class CollisionDetector {
-    private final FitViewport viewport;
     private final TiledMapTileLayer buildableLayer;
-    private final Vector3 mousePosition = new Vector3();
 
-    public CollisionDetector (FitViewport viewport, TiledMapTileLayer buildableLayer) {
-        this.viewport = viewport;
+    public CollisionDetector (TiledMapTileLayer buildableLayer) {
         this.buildableLayer = buildableLayer;
     }
 
     /**
-     * Checks if the clicked tile is buildable.
-     * @param screenX x-coordinate of the mouse on the screen
-     * @param screenY y-coordinate of the mouse on the screen
+     * Checks if the tiles covered by a selected building are buildable tiles.
+     * @param tileX the tile at which the bottom left corner of the building is on.
+     * @param tileY the tile at which the bottom left corner of the building is on.
+     * @param buildingWidth the width of the building in tiles.
+     * @param buildingHeight the height of the building in tiles.
+     * @return true if all the tiles that the building is on are buildable, false otherwise
      */
-    public void checkBuildable (int screenX, int screenY) {
-        mousePosition.set(screenX, screenY, 0);
-        // Convert mouse position to map coordinates
-        viewport.unproject(mousePosition);
-        // Convert mouse coordinates to corresponding tile coordinates
-        int tileX = (int) (mousePosition.x / buildableLayer.getTileWidth());
-        int tileY = (int) (mousePosition.y / buildableLayer.getTileHeight());
-
-        if ((isTileBuildable(tileX, tileY))) {
-            System.out.println("Tile is buildable at (" + tileX + ", " + tileY + ")");
-        } else {
-            System.out.println("Tile is not buildable at (" + tileX + ", " + tileY + ")");
+    public boolean isBuildingBuildable(int tileX, int tileY, int buildingWidth,
+                                       int buildingHeight, Sprite buildingSprite,
+                                       ArrayList<Building> placedBuildings) {
+        for (int x = tileX ; x < tileX + buildingWidth ; x++) {
+            for (int y = tileY ; y < tileY + buildingHeight ; y++) {
+                if (!(isTileBuildable(x, y))) {
+                    return false;
+                }
+            }
         }
+        for (Building placedBuilding : placedBuildings) {
+            Sprite placedBuildingSprite = placedBuilding.getBuildingSprite();
+            if (isBuildingOverlapping(buildingSprite, placedBuildingSprite)) {
+                return false;
+            }
+        }
+        return true;
+
     }
 
     /**
@@ -45,8 +52,14 @@ public class CollisionDetector {
      * @param y y-coordinate of the tile in the layer.
      * @return true if a buildable tile exists, false otherwise.
      */
-    public boolean isTileBuildable(int x, int y) {
+    private boolean isTileBuildable(int x, int y) {
         TiledMapTileLayer.Cell cell = buildableLayer.getCell(x, y);
         return cell != null;
+    }
+
+    private boolean isBuildingOverlapping(Sprite sprite1, Sprite sprite2) {
+        Rectangle rectangle1 = sprite1.getBoundingRectangle();
+        Rectangle rectangle2 = sprite2.getBoundingRectangle();
+        return rectangle1.overlaps(rectangle2);
     }
 }
