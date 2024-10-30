@@ -24,7 +24,6 @@ public class UIManager {
         this.isBuildingMenuPromptVisible = false;
         // Instantiate UI for building selection
         buildingUIManager = new BuildingUIManager(game, stage, buildingPlacer);
-        // w
     }
 
     /**
@@ -57,6 +56,11 @@ public class UIManager {
             String promptMessage = "Press M for Building Menu";
             game.font.draw(game.batch, promptMessage, PROMPT_POSITION_X, PROMPT_POSITION_Y);
         }
+    }
+
+    public void drawBuildingCounter() {
+        game.font.draw(game.batch, "Buildings placed: " + buildingUIManager.getBuildingCount(),
+            10, 1040);
     }
 
     public void showBuildingMenu() {
