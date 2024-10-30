@@ -34,6 +34,7 @@ public class GameInputProcessor implements InputProcessor {
                 pausePopup.show();
                 uiManager.hideBuildingMenuPrompt();
                 uiManager.hideBuildingMenu();
+                buildingPlacer.deselectBuilding();
             }
             return true;
         }
@@ -45,6 +46,7 @@ public class GameInputProcessor implements InputProcessor {
                 uiManager.hideBuildingMenu();
             } else {
                 uiManager.showBuildingMenu();
+                buildingPlacer.deselectBuilding();
             }
         }
         return false;
@@ -58,7 +60,14 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return pausePopup.isVisible();
+        if (pausePopup.isVisible()) {
+            return false;
+        }
+        if (buildingPlacer.isBuildingSelected) {
+            buildingPlacer.placeBuilding(screenX, screenY);
+            buildingPlacer.deselectBuilding();
+        }
+        return true;
     }
 
     @Override
