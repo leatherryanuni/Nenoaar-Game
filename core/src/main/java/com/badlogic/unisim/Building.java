@@ -5,29 +5,27 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Building {
     private final UniSimGame game;
-    private final Texture buildingTexture;
     private final Sprite buildingSprite;
+    private final String buildingType;
 
-    public Building (UniSimGame game, String imagePath) {
+    public Building (UniSimGame game, Texture buildingTexture,
+                     String buildingType, int snappedPositionX,
+                     int snappedPositionY) {
         this.game = game;
-        buildingTexture = new Texture(imagePath);
-        buildingSprite = new Sprite(buildingTexture);
+        this.buildingSprite = new Sprite(buildingTexture);
+        this.buildingType = buildingType;
+        buildingSprite.setPosition(snappedPositionX, snappedPositionY);
+    }
+
+    public Sprite getBuildingSprite () {
+        return buildingSprite;
+    }
+
+    public String getBuildingType() {
+        return buildingType;
     }
 
     public void draw() {
-        buildingSprite.setPosition(0, 0);
         buildingSprite.draw(game.batch);
     }
-
-    public Texture getBuildingTexture () {
-        return buildingTexture;
-    }
-
-    public void dispose() {
-        buildingTexture.dispose();
-    }
-
-
-
-
 }
