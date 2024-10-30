@@ -4,28 +4,37 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+/**
+ * This class is responsible for the clickListener attached to the ImageButtons
+ * containing the building images.
+ */
 public class BuildingClickListener extends ClickListener {
     private final BuildingUIManager buildingUIManager;
     private final BuildingPlacer buildingPlacer;
     private final Texture buildingTexture;
     private final Texture buildableBuildingTexture;
     private final Texture nonBuildableBuildingTexture;
+    private final String buildingType;
 
     public BuildingClickListener(BuildingPlacer buildingPlacer,
                                  Texture buildingTexture,
                                  Texture buildableBuildingTexture,
                                  Texture nonBuildableBuildingTexture,
-                                 BuildingUIManager buildingUIManager) {
+                                 BuildingUIManager buildingUIManager,
+                                 String buildingType) {
         this.buildingPlacer = buildingPlacer;
         this.buildingTexture = buildingTexture;
         this.buildableBuildingTexture = buildableBuildingTexture;
         this.nonBuildableBuildingTexture = nonBuildableBuildingTexture;
         this.buildingUIManager = buildingUIManager;
+        this.buildingType = buildingType;
     }
 
     @Override
     public void clicked(InputEvent event, float x, float y) {
-        buildingPlacer.selectBuilding(buildingTexture, buildableBuildingTexture, nonBuildableBuildingTexture);
+        buildingPlacer.selectBuilding(buildingTexture, buildableBuildingTexture,
+                                      nonBuildableBuildingTexture,
+                                      buildingType);
         buildingUIManager.hideBuildingMenu();
     }
 }
