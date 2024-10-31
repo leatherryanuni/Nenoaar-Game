@@ -31,7 +31,7 @@ public class GameScreen implements Screen {
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
     private List<Student> studentList;
-    private final int maxNumStudents = 10;
+    private final int maxNumStudents = 1;
     private TiledMapTileLayer buildableLayer;
     private CollisionDetector collisionDetector;
     int MAP_WIDTH = 1920;
@@ -97,7 +97,13 @@ public class GameScreen implements Screen {
         // Display the pause popup on-screen
         pausePopup.draw(game.batch);
         // Update the students on the screen
+
         for (Student student : studentList) {
+            if (!gameTimer.isPaused()) {
+                if (student.move()) {
+                    student.resetStudent();
+                }
+            }
             student.sprite.draw(game.batch);
         }
         game.batch.end();
