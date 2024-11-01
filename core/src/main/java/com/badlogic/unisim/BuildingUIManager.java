@@ -96,6 +96,12 @@ public class BuildingUIManager {
         };
     }
 
+    /**
+     * Creates a Map object that maps the name of the building to its type
+     * e.g {potato shop: eat, space science: learn} .
+     * @param buildingNames array of building names.
+     * @return the Map object with each building name mapped to its type.
+     */
     private Map<String, String> loadBuildingNameToType(String[] buildingNames) {
         String[] buildingTypes = {"eat", "learn", "sleep", "recreation"};
         Map<String, String> buildingNameToType = new HashMap<>();
@@ -223,7 +229,7 @@ public class BuildingUIManager {
      */
     private void addClickListenerToImageButtons(ImageButton[] buildingButtons) {
         for (int i = 0; i < buildingButtons.length; i++) {
-            buildingButtons[i].addListener(new BuildingClickListener(buildingPlacer,
+            buildingButtons[i].addListener(new NewBuildingClickListener(buildingPlacer,
                                                                      buildingTextures[i],
                                                                      buildableBuildingTextures[i],
                                                                      nonBuildableBuildingTextures[i],
