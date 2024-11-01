@@ -20,9 +20,9 @@ public class Building {
     private int buildingPositionX;
     private int buildingPositionY;
 
-    public Building (UniSimGame game, Stage stage, String buildingType, Texture buildingTexture,
-                     Texture buildableBuildingTexture, Texture nonBuildableBuildingTexture,
-                     int snappedPositionX, int snappedPositionY) {
+    public Building(UniSimGame game, Stage stage, String buildingType, Texture buildingTexture,
+                    Texture buildableBuildingTexture, Texture nonBuildableBuildingTexture,
+                    int snappedPositionX, int snappedPositionY) {
         this.game = game;
         this.buildingType = buildingType;
         this.buildingTexture = buildingTexture;
@@ -31,34 +31,35 @@ public class Building {
 
         this.buildingPositionX = snappedPositionX;
         this.buildingPositionY = snappedPositionY;
-
+        // Create new sprite for the building
         this.buildingSprite = new Sprite(buildingTexture);
         buildingSprite.setPosition(snappedPositionX, snappedPositionY);
-
+        // Create new clickable actor for the building
         this.buildingActor = new Actor() {};
+        // Ensure the clickable region lies within the sprite
         buildingActor.setBounds(snappedPositionX, snappedPositionY,
-                                buildingSprite.getWidth(), buildingSprite.getHeight());
+            buildingSprite.getWidth(), buildingSprite.getHeight());
 
         stage.addActor(buildingActor);
     }
 
-    public Actor getBuildingActor () {
+    public Actor getBuildingActor() {
         return buildingActor;
     }
 
-    public Sprite getBuildingSprite () {
+    public Sprite getBuildingSprite() {
         return buildingSprite;
     }
 
-    public Texture getBuildingTexture () {
+    public Texture getBuildingTexture() {
         return buildingTexture;
     }
 
-    public Texture getBuildableBuildingTexture () {
+    public Texture getBuildableBuildingTexture() {
         return buildableBuildingTexture;
     }
 
-    public Texture getNonBuildableBuildingTexture () {
+    public Texture getNonBuildableBuildingTexture() {
         return nonBuildableBuildingTexture;
     }
 
@@ -66,13 +67,36 @@ public class Building {
         return buildingType;
     }
 
+    // Enables the sprite to be clickable.
+    public void enableActor() {
+        buildingActor.setVisible(true);
+    }
+
+    /**
+     * Temporarily removes the clickable region of a sprite.
+     */
+    public void disableActor() {
+        buildingActor.setVisible(false);
+    }
+
+    /**
+     * Places a Building object on the map that has been moved.
+     * @param snappedPositionX screen x-coordinate of bottom left corner
+     *                         of the map's tile in that location.
+     * @param snappedPositionY screen y-coordinate of bottom left corner
+     *                         of the map's tile in that location.
+     */
     public void place(int snappedPositionX, int snappedPositionY) {
         buildingPositionX = snappedPositionX;
         buildingPositionY = snappedPositionY;
         buildingSprite.setTexture(buildingTexture);
         buildingSprite.setPosition(buildingPositionX, buildingPositionY);
         buildingActor.setBounds(buildingPositionX, buildingPositionY,
-                                buildingSprite.getWidth(), buildingSprite.getHeight());
+            buildingSprite.getWidth(), buildingSprite.getHeight());
+    }
+
+    public void deleteActor() {
+        buildingActor.remove();
     }
 
     public void draw() {

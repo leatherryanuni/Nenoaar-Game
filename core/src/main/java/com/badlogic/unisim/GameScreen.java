@@ -96,6 +96,7 @@ public class GameScreen implements Screen {
         game.font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
                 20, 40);
         uiManager.drawBuildingMenuPrompt();
+        uiManager.drawDeleteBuildingPrompt();
         uiManager.drawBuildingCounter();
         pausePopup.draw();
         // Stop drawing

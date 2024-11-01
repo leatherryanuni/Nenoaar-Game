@@ -23,9 +23,9 @@ public class BuildingPlacer {
     private final int TILE_WIDTH;
     private final int TILE_HEIGHT;
     private Building placedBuilding;
-    private Texture buildingTexture;
-    private Texture buildableBuildingTexture;
-    private Texture nonBuildableBuildingTexture;
+    private Texture defaultTexture;
+    private Texture buildableTexture;
+    private Texture nonBuildableTexture;
     private Sprite buildingSprite;
     private String buildingType;
     private int buildingCount = 0;
@@ -45,6 +45,10 @@ public class BuildingPlacer {
         collisionDetector = new CollisionDetector(buildableLayer);
     }
 
+    /**
+     * Returns the number of placed buildings on the map.
+     * @return the number of placed buildings on the map.
+     */
     public int getBuildingCount() {
         return buildingCount;
     }
@@ -85,32 +89,39 @@ public class BuildingPlacer {
     /**
      * Creates a building sprite upon selection of a building from building menu.
      * @param buildingTexture The general texture of the building.
-     * @param buildableBuildingTexture The texture representing the building
+     * @param buildableTexture The texture representing the building
      *        when it can be placed in the current location on the map.
-     * @param nonBuildableBuildingTexture The texture representing the building
+     * @param nonBuildableTexture The texture representing the building
      *        when it cannot be placed in the current location of the map.
      */
     public void selectNewBuilding(Texture buildingTexture,
-                                  Texture buildableBuildingTexture,
-                                  Texture nonBuildableBuildingTexture,
+                                  Texture buildableTexture,
+                                  Texture nonBuildableTexture,
                                   String buildingType) {
         this.isNewBuildingSelected = true;
-        this.buildingTexture = buildingTexture;
-        this.buildableBuildingTexture = buildableBuildingTexture;
-        this.nonBuildableBuildingTexture = nonBuildableBuildingTexture;
+        this.defaultTexture = buildingTexture;
+        this.buildableTexture = buildableTexture;
+        this.nonBuildableTexture = nonBuildableTexture;
         buildingSprite = new Sprite(buildingTexture);
         this.buildingType = buildingType;
     }
 
+    /**
+     * Selects a placed building to be moved. Similar to the above method,
+     * however uses the already existing building's attributes.
+     * @param placedBuilding the Building object on the map that has been selected.
+     */
     public void selectPlacedBuilding(Building placedBuilding) {
         isPlacedBuildingSelected = true;
         buildingSprite = placedBuilding.getBuildingSprite();
+        // Disable the clickable region of the building's original location
+        placedBuilding.disableActor();
         this.placedBuilding = placedBuilding;
-        this.buildingTexture = placedBuilding.getBuildingTexture();
-        this.buildableBuildingTexture = placedBuilding.getBuildableBuildingTexture();
-        this.nonBuildableBuildingTexture = placedBuilding.getNonBuildableBuildingTexture();
+        this.defaultTexture = placedBuilding.getBuildingTexture();
+        this.buildableTexture = placedBuilding.getBuildableBuildingTexture();
+        this.nonBuildableTexture = placedBuilding.getNonBuildableBuildingTexture();
+        buildingSprite.setTexture(buildableTexture);
         placedBuildings.remove(placedBuilding);
-        buildingCount --;
     }
 
     /**
@@ -131,20 +142,6 @@ public class BuildingPlacer {
     }
 
     /**
-     * Changes the building texture to indicate whether it can or cannot be
-     * placed in the current location on the map.
-     * @param isBuildable true if the building covers tiles that are all
-     *                    buildable, false otherwise.
-     */
-    private void updateBuildingTexture(boolean isBuildable) {
-        if (isBuildable) {
-            buildingSprite.setTexture(buildableBuildingTexture);
-        } else {
-            buildingSprite.setTexture(nonBuildableBuildingTexture);
-        }
-    }
-
-    /**
      * Places a new building object at the location of the mouse when a
      * click is registered and increases building count by 1.
      * @param screenX x-coordinate of mouse on the screen
@@ -161,24 +158,33 @@ public class BuildingPlacer {
         // Obtain map coordinates of the bottom left corner of the current tile
         int snappedPositionX = tileX * TILE_WIDTH;
         int snappedPositionY = tileY * TILE_HEIGHT;
+        // If the building has already been created, its position just has to
+        // be changed and re-added to the array.
         if (isPlacedBuildingSelected) {
             this.placedBuildings.add(placedBuilding);
-            buildingCount ++;
             placedBuilding.place(snappedPositionX, snappedPositionY);
+            // Allow the placed building to be clickable again
+            placedBuilding.enableActor();
             return;
         }
+        // Otherwise we create a new building
         Building newPlacedBuilding = new Building(game, stage, buildingType,
-                                               buildingTexture, buildableBuildingTexture,
-                                               nonBuildableBuildingTexture,
+            defaultTexture, buildableTexture,
+            nonBuildableTexture,
                                                snappedPositionX, snappedPositionY);
         addClickListenerToBuilding(newPlacedBuilding);
         placedBuildings.add(newPlacedBuilding);
         buildingCount++;
     }
 
-    private void addClickListenerToBuilding(Building newPlacedBuilding) {
-        newPlacedBuilding.getBuildingActor().addListener(new PlacedBuildingClickListener(this,
-                                                                                    newPlacedBuilding));
+    /**
+     * Removes the Building object and deletes its clickable region
+     * from the map.
+     */
+    public void deleteBuilding() {
+        placedBuilding.deleteActor();
+        placedBuildings.remove(placedBuilding);
+        buildingCount--;
     }
 
     /**
@@ -191,8 +197,43 @@ public class BuildingPlacer {
     }
 
     public void dispose() {
-        buildingTexture.dispose();
-        buildableBuildingTexture.dispose();
-        nonBuildableBuildingTexture.dispose();
+        defaultTexture.dispose();
+        buildableTexture.dispose();
+        nonBuildableTexture.dispose();
+    }
+
+    public void disableBuildingActors() {
+        for (Building building : placedBuildings) {
+            building.disableActor();
+        }
+    }
+
+    public void enableBuildingActors() {
+        for (Building building : placedBuildings) {
+            building.enableActor();
+        }
+    }
+
+    /**
+     * Changes the building texture to indicate whether it can or cannot be
+     * placed in the current location on the map.
+     * @param isBuildable true if the building covers tiles that are all
+     *                    buildable, false otherwise.
+     */
+    private void updateBuildingTexture(boolean isBuildable) {
+        if (isBuildable) {
+            buildingSprite.setTexture(buildableTexture);
+        } else {
+            buildingSprite.setTexture(nonBuildableTexture);
+        }
+    }
+
+    /**
+     * Adds a click listener to the actors of the newly created Building objects
+     * @param newPlacedBuilding a newly created Building object.
+     */
+    private void addClickListenerToBuilding(Building newPlacedBuilding) {
+        newPlacedBuilding.getBuildingActor().addListener(
+            new PlacedBuildingClickListener(this, newPlacedBuilding));
     }
 }

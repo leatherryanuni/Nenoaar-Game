@@ -7,7 +7,8 @@ public class PlacedBuildingClickListener extends ClickListener {
     BuildingPlacer buildingPlacer;
     Building building;
 
-    public PlacedBuildingClickListener(BuildingPlacer buildingPlacer, Building building) {
+    public PlacedBuildingClickListener(BuildingPlacer buildingPlacer,
+                                       Building building) {
         this.buildingPlacer = buildingPlacer;
         this.building = building;
     }
