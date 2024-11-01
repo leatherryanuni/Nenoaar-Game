@@ -48,12 +48,12 @@ public class CollisionDetector {
     /**
      * Checks if a tile is buildable by verifying whether such a tile exists
      * in the collision layer of the map.
-     * @param x x-coordinate of the tile in the layer.
-     * @param y y-coordinate of the tile in the layer.
+     * @param tileX x-coordinate of the tile in the layer.
+     * @param tileY y-coordinate of the tile in the layer.
      * @return true if a buildable tile exists, false otherwise.
      */
-    private boolean isTileBuildable(int x, int y) {
-        TiledMapTileLayer.Cell cell = buildableLayer.getCell(x, y);
+    private boolean isTileBuildable(int tileX, int tileY) {
+        TiledMapTileLayer.Cell cell = buildableLayer.getCell(tileX, tileY);
         return cell != null;
     }
 
