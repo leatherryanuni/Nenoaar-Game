@@ -2,8 +2,6 @@ package com.badlogic.unisim;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 
 /**
  * This class processes all the inputs executed by the user when interacting
@@ -13,15 +11,14 @@ public class GameInputProcessor implements InputProcessor {
     private final UIManager uiManager;
     private final GameTimer gameTimer;
     private final PausePopup pausePopup;
-    private final CollisionDetector collisionDetector;
+    private final BuildingPlacer buildingPlacer;
 
-    public GameInputProcessor (OrthographicCamera camera,
-                               TiledMapTileLayer buildableLayer,
-                               GameTimer gameTimer, PausePopup pausePopup, UIManager uiManager) {
-        collisionDetector = new CollisionDetector(camera, buildableLayer);
+    public GameInputProcessor (GameTimer gameTimer, PausePopup pausePopup,
+                               UIManager uiManager, BuildingPlacer buildingPlacer) {
         this.gameTimer = gameTimer;
         this.pausePopup = pausePopup;
         this.uiManager = uiManager;
+        this.buildingPlacer = buildingPlacer;
     }
 
     @Override
@@ -32,22 +29,42 @@ public class GameInputProcessor implements InputProcessor {
                 gameTimer.resumeTime();
                 pausePopup.hide();
                 uiManager.showBuildingMenuPrompt();
+                // Allow placed buildings to be clickable
+                buildingPlacer.enableBuildingActors();
             } else {
+                // Hide/close any open menus and messages.
                 gameTimer.pauseTime();
                 pausePopup.show();
                 uiManager.hideBuildingMenuPrompt();
                 uiManager.hideBuildingMenu();
+                // Stop placed buildings from being clickable
+                buildingPlacer.disableBuildingActors();
             }
             return true;
         }
+        // Disable any other key inputs if the game is paused.
+        if (gameTimer.isPaused()) {
+            return false;
+        }
         if (keycode == Input.Keys.M) {
             // The key 'M' allows closing and opening the building menu.
-            // Cannot open building menu if game is paused, so return false.
-            if (gameTimer.isPaused()) { return false; }
             if (uiManager.isBuildingMenuVisible()) {
                 uiManager.hideBuildingMenu();
             } else {
                 uiManager.showBuildingMenu();
+                // If the building menu is opened when a placed building is
+                // selected, the building will be deleted.
+                if (buildingPlacer.isPlacedBuildingSelected) {
+                    buildingPlacer.deleteBuilding();
+                }
+                buildingPlacer.deselectBuilding();
+            }
+        }
+        if (keycode == Input.Keys.BACKSPACE) {
+            if (buildingPlacer.isPlacedBuildingSelected) {
+                buildingPlacer.deleteBuilding();
+                buildingPlacer.deselectBuilding();
+                uiManager.showBuildingMenuPrompt();
             }
         }
         return false;
@@ -61,8 +78,22 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        collisionDetector.checkBuildable(screenX, screenY);
-        return pausePopup.isVisible();
+        // Disable click input if game is paused.
+        if (gameTimer.isPaused()) {
+            return false;
+        }
+        // Don't register click input if the building is not in a buildable area
+        if (!buildingPlacer.isBuildable) {
+            return false;
+        }
+        // Place a building on click input
+        if (buildingPlacer.isNewBuildingSelected || buildingPlacer.isPlacedBuildingSelected) {
+            buildingPlacer.placeBuilding(screenX, screenY);
+            buildingPlacer.deselectBuilding();
+            uiManager.hideBuildingMenuPrompt();
+            uiManager.showBuildingMenuPrompt();
+        }
+        return true;
     }
 
     @Override
@@ -76,7 +107,13 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        //checkBuildable(screenX, screenY);
+        // Don't register mouse movement if game is paused
+        if (gameTimer.isPaused()) {
+            return false;
+        }
+        if (buildingPlacer.isNewBuildingSelected || buildingPlacer.isPlacedBuildingSelected) {
+            buildingPlacer.snapBuildingToGrid(screenX, screenY);
+        }
         return false;
     }
 

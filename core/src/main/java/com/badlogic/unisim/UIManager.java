@@ -12,18 +12,20 @@ public class UIManager {
     private final Skin skin;
     private final UniSimGame game;
     private final Stage stage;
+    private final BuildingPlacer buildingPlacer;
     private final BuildingUIManager buildingUIManager;
     private boolean isBuildingMenuPromptVisible;
 
-    public UIManager(UniSimGame game, Stage stage) {
+    public UIManager(UniSimGame game, Stage stage, BuildingPlacer buildingPlacer) {
         this.game = game;
         this.stage = stage;
+        this.buildingPlacer = buildingPlacer;
         // Load the skin which is like a texture for UI elements
         skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
-        // Hide building menu prompt on start of game
+        // Hide prompts at start of game
         this.isBuildingMenuPromptVisible = false;
         // Instantiate UI for building selection
-        buildingUIManager = new BuildingUIManager(stage);
+        buildingUIManager = new BuildingUIManager(game, stage, buildingPlacer);
     }
 
     /**
@@ -44,18 +46,32 @@ public class UIManager {
     public void showBuildingMenuPrompt() {
         isBuildingMenuPromptVisible = true;
     }
-
     public void hideBuildingMenuPrompt() {
         isBuildingMenuPromptVisible = false;
     }
 
     public void drawBuildingMenuPrompt() {
         if (isBuildingMenuPromptVisible) {
-            float PROMPT_POSITION_X = 620;
-            float PROMPT_POSITION_Y = 20;
+            float PROMPT_POSITION_X = 1410;
+            float PROMPT_POSITION_Y = 40;
             String promptMessage = "Press M for Building Menu";
             game.font.draw(game.batch, promptMessage, PROMPT_POSITION_X, PROMPT_POSITION_Y);
         }
+    }
+
+    public void drawDeleteBuildingPrompt() {
+        if (buildingPlacer.isPlacedBuildingSelected) {
+            hideBuildingMenuPrompt();
+            float PROMPT_POSITION_X = 1200;
+            float PROMPT_POSITION_Y = 40;
+            String promptMessage = "Press BACKSPACE to delete building";
+            game.font.draw(game.batch, promptMessage, PROMPT_POSITION_X, PROMPT_POSITION_Y);
+        }
+    }
+
+    public void drawBuildingCounter() {
+        game.font.draw(game.batch, "Buildings placed: " + buildingPlacer.getBuildingCount(),
+            10, 1040);
     }
 
     public void showBuildingMenu() {

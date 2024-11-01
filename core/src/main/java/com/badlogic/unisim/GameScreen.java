@@ -22,10 +22,14 @@ public class GameScreen implements Screen {
     private final GameTimer gameTimer;
     private final PausePopup pausePopup;
     private UIManager uiManager;
+    private BuildingPlacer buildingPlacer;
     private OrthographicCamera camera;
     private FitViewport viewport;
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer mapRenderer;
+
+    float MAP_WIDTH = 1920;
+    float MAP_HEIGHT = 1056;
 
     public GameScreen(UniSimGame game) {
         this.game = game;
@@ -36,8 +40,6 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         // Prepare your screen here
-        int MAP_WIDTH = 1920;
-        int MAP_HEIGHT = 1056;
         // Initialise camera and viewport to fit the size of the map.
         camera = new OrthographicCamera();
         viewport = new FitViewport(MAP_WIDTH, MAP_HEIGHT, camera);
@@ -46,13 +48,16 @@ public class GameScreen implements Screen {
         TiledMapTileLayer buildableLayer = (TiledMapTileLayer) tiledMap.getLayers().get("BuildableLayer");
         // Create a map renderer to be able to render the map in game.
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        System.out.println(viewport.getScreenWidth() + "," + viewport.getScreenHeight());
         // Create stage
         Stage stage = new Stage(viewport);
+        buildingPlacer = new BuildingPlacer(game, viewport, stage, buildableLayer);
         // Load UI
-        uiManager = new UIManager(game, stage);
+        uiManager = new UIManager(game, stage, buildingPlacer);
         // Load input processor for the game.
-        GameInputProcessor gameInputProcessor = new GameInputProcessor(camera,
-                                            buildableLayer, gameTimer, pausePopup, uiManager);
+        GameInputProcessor gameInputProcessor = new GameInputProcessor(
+                                            gameTimer, pausePopup,
+                                            uiManager, buildingPlacer);
         // As we need an additional input processor for UI elements, we can
         // combine the two input processors in an input multiplexer.
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
@@ -65,35 +70,46 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         // Draw your screen here. "delta" is the time since last render in seconds.
+        viewport.apply();
+        camera.update();
+        // Enable the spriteBatch to position and scale textures correctly on-screen
+        game.batch.setProjectionMatrix(camera.combined);
         // Update timer
         gameTimer.updateTime(delta);
         // Check if the timer has ended, end the game once it has
         if (gameTimer.isTimeEnded()) {
             game.setScreen(new EndScreen(game));
+            this.dispose();
         }
         // Clear the screen
         ScreenUtils.clear(Color.BLACK);
         // Set the camera to the map renderer to make the map visible
         mapRenderer.setView(camera);
         mapRenderer.render();
-
-        uiManager.renderUI(delta);
-
+        // Begin drawing
         game.batch.begin();
+        buildingPlacer.drawBuildings();
+        buildingPlacer.attachBuildingToMouse();
+        // Increase the size of the font used for on-screen writing
+        game.font.getData().setScale(3.0f);
         // Display the timer on-screen
         game.font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
-            10, 20);
-        // Display the pause popup on-screen
-        pausePopup.draw();
-        // Display building menu prompt on-screen
+                20, 40);
         uiManager.drawBuildingMenuPrompt();
+        uiManager.drawDeleteBuildingPrompt();
+        uiManager.drawBuildingCounter();
+        pausePopup.draw();
+        // Stop drawing
         game.batch.end();
+
+        uiManager.renderUI(delta);
     }
 
     @Override
     public void resize(int width, int height) {
         // Resize your screen here. The parameters represent the new window size.
         viewport.update(width, height, true);
+        camera.update();
     }
 
     @Override
@@ -119,5 +135,4 @@ public class GameScreen implements Screen {
         pausePopup.dispose();
         uiManager.dispose();
     }
-
 }
