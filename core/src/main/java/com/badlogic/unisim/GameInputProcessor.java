@@ -30,6 +30,7 @@ public class GameInputProcessor implements InputProcessor {
                 pausePopup.hide();
                 uiManager.showBuildingMenuPrompt();
             } else {
+                // Hide/close any open menus and messages.
                 gameTimer.pauseTime();
                 pausePopup.show();
                 uiManager.hideBuildingMenuPrompt();
@@ -41,7 +42,9 @@ public class GameInputProcessor implements InputProcessor {
         if (keycode == Input.Keys.M) {
             // The key 'M' allows closing and opening the building menu.
             // Cannot open building menu if game is paused, so return false.
-            if (gameTimer.isPaused()) { return false; }
+            if (gameTimer.isPaused()) {
+                return false;
+            }
             if (uiManager.isBuildingMenuVisible()) {
                 uiManager.hideBuildingMenu();
             } else {
@@ -60,10 +63,11 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (pausePopup.isVisible()) {
+        // Don't register click input if the building is not in a buildable area
+        if (!buildingPlacer.isBuildable) {
             return false;
         }
-        if (buildingPlacer.isBuildingSelected) {
+        if (buildingPlacer.isNewBuildingSelected || buildingPlacer.isPlacedBuildingSelected) {
             buildingPlacer.placeBuilding(screenX, screenY);
             buildingPlacer.deselectBuilding();
         }
@@ -81,7 +85,7 @@ public class GameInputProcessor implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        if (buildingPlacer.isBuildingSelected) {
+        if (buildingPlacer.isNewBuildingSelected || buildingPlacer.isPlacedBuildingSelected) {
             buildingPlacer.snapBuildingToGrid(screenX, screenY);
         }
         return false;
