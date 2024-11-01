@@ -5,7 +5,6 @@ package com.badlogic.unisim;
  * the game screen.
  */
 public class GameTimer {
-
     private float remainingTime;
     private boolean isPaused;
 
