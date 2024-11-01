@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class EndScreen implements Screen {
     private final UniSimGame game;
-    OrthographicCamera camera;
+    private final OrthographicCamera camera;
 
     public EndScreen(UniSimGame game) {
         this.game = game;
