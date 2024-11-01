@@ -51,7 +51,7 @@ public class GameScreen implements Screen {
         System.out.println(viewport.getScreenWidth() + "," + viewport.getScreenHeight());
         // Create stage
         Stage stage = new Stage(viewport);
-        buildingPlacer = new BuildingPlacer(game, viewport, buildableLayer);
+        buildingPlacer = new BuildingPlacer(game, viewport, stage, buildableLayer);
         // Load UI
         uiManager = new UIManager(game, stage, buildingPlacer);
         // Load input processor for the game.
@@ -72,32 +72,33 @@ public class GameScreen implements Screen {
         // Draw your screen here. "delta" is the time since last render in seconds.
         viewport.apply();
         camera.update();
+        // Enable the spriteBatch to position and scale textures correctly on-screen
         game.batch.setProjectionMatrix(camera.combined);
         // Update timer
         gameTimer.updateTime(delta);
         // Check if the timer has ended, end the game once it has
         if (gameTimer.isTimeEnded()) {
             game.setScreen(new EndScreen(game));
+            this.dispose();
         }
         // Clear the screen
         ScreenUtils.clear(Color.BLACK);
         // Set the camera to the map renderer to make the map visible
         mapRenderer.setView(camera);
         mapRenderer.render();
-
-
+        // Begin drawing
         game.batch.begin();
         buildingPlacer.drawBuildings();
         buildingPlacer.attachBuildingToMouse();
-        // Display the timer on-screen
+        // Increase the size of the font used for on-screen writing
         game.font.getData().setScale(3.0f);
+        // Display the timer on-screen
         game.font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
                 20, 40);
-        // Display building menu prompt on-screen
         uiManager.drawBuildingMenuPrompt();
         uiManager.drawBuildingCounter();
-        // Display the pause popup on-screen
         pausePopup.draw();
+        // Stop drawing
         game.batch.end();
 
         uiManager.renderUI(delta);
