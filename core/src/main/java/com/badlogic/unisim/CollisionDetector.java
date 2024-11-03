@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * This class is responsible for 'building to building' and 'building to map'
@@ -27,7 +27,7 @@ public class CollisionDetector {
      */
     public boolean isBuildingBuildable(int tileX, int tileY, int buildingWidth,
                                        int buildingHeight, Sprite buildingSprite,
-                                       ArrayList<Building> placedBuildings) {
+                                       Map<Building, String> placedBuildings) {
         for (int x = tileX ; x < tileX + buildingWidth ; x++) {
             for (int y = tileY ; y < tileY + buildingHeight ; y++) {
                 if (!(isTileBuildable(x, y))) {
@@ -35,7 +35,7 @@ public class CollisionDetector {
                 }
             }
         }
-        for (Building placedBuilding : placedBuildings) {
+        for (Building placedBuilding : placedBuildings.keySet()) {
             Sprite placedBuildingSprite = placedBuilding.getBuildingSprite();
             if (isBuildingOverlapping(buildingSprite, placedBuildingSprite)) {
                 return false;
