@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * This class is responsible for being able to position and place buildings
@@ -15,10 +15,11 @@ import java.util.ArrayList;
  */
 public class BuildingPlacer {
     private final UniSimGame game;
+    private final BuildingsTracker buildingsTracker;
     private final CollisionDetector collisionDetector;
     private final FitViewport viewport;
     private final Stage stage;
-    private final ArrayList<Building> placedBuildings;
+    private final Map<Building, String> placedBuildings;
     private final Vector3 mousePosition = new Vector3();
     private final int TILE_WIDTH;
     private final int TILE_HEIGHT;
@@ -28,29 +29,21 @@ public class BuildingPlacer {
     private Texture nonBuildableTexture;
     private Sprite buildingSprite;
     private String buildingType;
-    private int buildingCount = 0;
     public boolean isBuildable;
     public boolean isNewBuildingSelected = false;
     public boolean isPlacedBuildingSelected = false;
 
-    public BuildingPlacer(UniSimGame game, FitViewport viewport,
+    public BuildingPlacer(UniSimGame game, BuildingsTracker buildingsTracker, FitViewport viewport,
                           Stage stage, TiledMapTileLayer buildableLayer) {
         this.game = game;
+        this.buildingsTracker = buildingsTracker;
         this.viewport = viewport;
         this.stage = stage;
-        this.placedBuildings = new ArrayList<>();
+        this.placedBuildings = buildingsTracker.getPlacedBuildings();
         this.isBuildable = true;
         this.TILE_WIDTH = buildableLayer.getTileWidth();
         this.TILE_HEIGHT = buildableLayer.getTileHeight();
         collisionDetector = new CollisionDetector(buildableLayer);
-    }
-
-    /**
-     * Returns the number of placed buildings on the map.
-     * @return the number of placed buildings on the map.
-     */
-    public int getBuildingCount() {
-        return buildingCount;
     }
 
     /**
@@ -114,14 +107,13 @@ public class BuildingPlacer {
     public void selectPlacedBuilding(Building placedBuilding) {
         isPlacedBuildingSelected = true;
         buildingSprite = placedBuilding.getBuildingSprite();
-        // Disable the clickable region of the building's original location
-        placedBuilding.disableActor();
         this.placedBuilding = placedBuilding;
-        this.defaultTexture = placedBuilding.getBuildingTexture();
-        this.buildableTexture = placedBuilding.getBuildableBuildingTexture();
-        this.nonBuildableTexture = placedBuilding.getNonBuildableBuildingTexture();
+        this.defaultTexture = placedBuilding.getDefaultTexture();
+        this.buildableTexture = placedBuilding.getBuildableTexture();
+        this.nonBuildableTexture = placedBuilding.getNonBuildableTexture();
         buildingSprite.setTexture(buildableTexture);
-        placedBuildings.remove(placedBuilding);
+        // Disable the building's clickable actor
+        buildingsTracker.disableBuildingOnMap(placedBuilding);
     }
 
     /**
@@ -161,20 +153,18 @@ public class BuildingPlacer {
         // If the building has already been created, its position just has to
         // be changed and re-added to the array.
         if (isPlacedBuildingSelected) {
-            this.placedBuildings.add(placedBuilding);
+            // Re-activate building's clickable actor and collisions
+            buildingsTracker.enableBuildingOnMap(placedBuilding);
             placedBuilding.place(snappedPositionX, snappedPositionY);
-            // Allow the placed building to be clickable again
-            placedBuilding.enableActor();
             return;
         }
         // Otherwise we create a new building
         Building newPlacedBuilding = new Building(game, stage, buildingType,
-            defaultTexture, buildableTexture,
-            nonBuildableTexture,
-                                               snappedPositionX, snappedPositionY);
+                                                defaultTexture, buildableTexture,
+                                                nonBuildableTexture,
+                                                snappedPositionX, snappedPositionY);
         addClickListenerToBuilding(newPlacedBuilding);
-        placedBuildings.add(newPlacedBuilding);
-        buildingCount++;
+        buildingsTracker.addBuilding(newPlacedBuilding);
     }
 
     /**
@@ -183,33 +173,17 @@ public class BuildingPlacer {
      */
     public void deleteBuilding() {
         placedBuilding.deleteActor();
-        placedBuildings.remove(placedBuilding);
-        buildingCount--;
-    }
-
-    /**
-     * Draws all the currently placed buildings on the map
-     */
-    public void drawBuildings() {
-        for (Building building : placedBuildings) {
-            building.draw();
-        }
-    }
-
-    public void dispose() {
-        defaultTexture.dispose();
-        buildableTexture.dispose();
-        nonBuildableTexture.dispose();
+        buildingsTracker.removeBuilding(placedBuilding);
     }
 
     public void disableBuildingActors() {
-        for (Building building : placedBuildings) {
+        for (Building building : placedBuildings.keySet()) {
             building.disableActor();
         }
     }
 
     public void enableBuildingActors() {
-        for (Building building : placedBuildings) {
+        for (Building building : placedBuildings.keySet()) {
             building.enableActor();
         }
     }
@@ -235,5 +209,11 @@ public class BuildingPlacer {
     private void addClickListenerToBuilding(Building newPlacedBuilding) {
         newPlacedBuilding.getBuildingActor().addListener(
             new PlacedBuildingClickListener(this, newPlacedBuilding));
+    }
+
+    public void dispose() {
+        defaultTexture.dispose();
+        buildableTexture.dispose();
+        nonBuildableTexture.dispose();
     }
 }
