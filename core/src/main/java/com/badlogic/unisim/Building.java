@@ -14,25 +14,24 @@ public class Building {
     private final Sprite buildingSprite;
     private final Actor buildingActor;
     private final String buildingType;
-    private final Texture buildingTexture;
-    private final Texture buildableBuildingTexture;
-    private final Texture nonBuildableBuildingTexture;
+    private final Texture defaultTexture;
+    private final Texture buildableTexture;
+    private final Texture nonBuildableTexture;
     private int buildingPositionX;
     private int buildingPositionY;
 
-    public Building(UniSimGame game, Stage stage, String buildingType, Texture buildingTexture,
-                    Texture buildableBuildingTexture, Texture nonBuildableBuildingTexture,
+    public Building(UniSimGame game, Stage stage, String buildingType, Texture defaultTexture,
+                    Texture buildableTexture, Texture nonBuildableTexture,
                     int snappedPositionX, int snappedPositionY) {
         this.game = game;
         this.buildingType = buildingType;
-        this.buildingTexture = buildingTexture;
-        this.buildableBuildingTexture = buildableBuildingTexture;
-        this.nonBuildableBuildingTexture = nonBuildableBuildingTexture;
-
+        this.defaultTexture = defaultTexture;
+        this.buildableTexture = buildableTexture;
+        this.nonBuildableTexture = nonBuildableTexture;
         this.buildingPositionX = snappedPositionX;
         this.buildingPositionY = snappedPositionY;
         // Create new sprite for the building
-        this.buildingSprite = new Sprite(buildingTexture);
+        this.buildingSprite = new Sprite(defaultTexture);
         buildingSprite.setPosition(snappedPositionX, snappedPositionY);
         // Create new clickable actor for the building
         this.buildingActor = new Actor() {};
@@ -51,16 +50,16 @@ public class Building {
         return buildingSprite;
     }
 
-    public Texture getBuildingTexture() {
-        return buildingTexture;
+    public Texture getDefaultTexture() {
+        return defaultTexture;
     }
 
-    public Texture getBuildableBuildingTexture() {
-        return buildableBuildingTexture;
+    public Texture getBuildableTexture() {
+        return buildableTexture;
     }
 
-    public Texture getNonBuildableBuildingTexture() {
-        return nonBuildableBuildingTexture;
+    public Texture getNonBuildableTexture() {
+        return nonBuildableTexture;
     }
 
     public String getBuildingType() {
@@ -89,7 +88,7 @@ public class Building {
     public void place(int snappedPositionX, int snappedPositionY) {
         buildingPositionX = snappedPositionX;
         buildingPositionY = snappedPositionY;
-        buildingSprite.setTexture(buildingTexture);
+        buildingSprite.setTexture(defaultTexture);
         buildingSprite.setPosition(buildingPositionX, buildingPositionY);
         buildingActor.setBounds(buildingPositionX, buildingPositionY,
             buildingSprite.getWidth(), buildingSprite.getHeight());
