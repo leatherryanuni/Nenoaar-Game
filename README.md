@@ -33,5 +33,6 @@ Note that most tasks that are not specific to a single project can be run with `
 For example, `core:clean` removes `build` folder only from the `core` project.
 
 ## Attribution 
- - 2D Art Tileset by [rubberduck](https://opengameart.org/content/colony-sim-extended-version) and [Buch] is licensed under [CC0 1.0 Universal (Public Domain Dedication)](http://creativecommons.org/publicdomain/zero/1.0/)
- - UI skin "Shade UI" by [Raymond "Raeleus" Buckley](https://ray3k.wordpress.com/artwork/shade-ui-skin-for-libgdx/) is licensed under [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/)
+ - LibGDX is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+ - 2D Art Tileset by [rubberduck](https://opengameart.org/content/colony-sim-extended-version) and [Buch] is licensed under [CC0 1.0 Universal (Public Domain Dedication)](http://creativecommons.org/publicdomain/zero/1.0/).
+ - UI skin "Shade UI" by [Raymond "Raeleus" Buckley](https://ray3k.wordpress.com/artwork/shade-ui-skin-for-libgdx/) is licensed under [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).
