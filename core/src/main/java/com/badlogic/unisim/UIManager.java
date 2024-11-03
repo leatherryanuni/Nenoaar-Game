@@ -13,19 +13,21 @@ public class UIManager {
     private final UniSimGame game;
     private final Stage stage;
     private final BuildingPlacer buildingPlacer;
+    private final BuildingsTracker buildingsTracker;
     private final BuildingUIManager buildingUIManager;
     private boolean isBuildingMenuPromptVisible;
 
-    public UIManager(UniSimGame game, Stage stage, BuildingPlacer buildingPlacer) {
+    public UIManager(UniSimGame game, Stage stage, BuildingPlacer buildingPlacer, BuildingsTracker buildingsTracker) {
         this.game = game;
         this.stage = stage;
         this.buildingPlacer = buildingPlacer;
+        this.buildingsTracker = buildingsTracker;
         // Load the skin which is like a texture for UI elements
         skin = new Skin(Gdx.files.internal("skins/uiskin.json"));
         // Hide prompts at start of game
         this.isBuildingMenuPromptVisible = false;
         // Instantiate UI for building selection
-        buildingUIManager = new BuildingUIManager(game, stage, buildingPlacer);
+        buildingUIManager = new BuildingUIManager(game, stage, buildingPlacer, buildingsTracker);
     }
 
     /**
@@ -70,11 +72,12 @@ public class UIManager {
     }
 
     public void drawBuildingCounter() {
-        game.font.draw(game.batch, "Buildings placed: " + buildingPlacer.getBuildingCount(),
+        game.font.draw(game.batch, "Buildings placed: " + buildingsTracker.getBuildingCount(),
             10, 1040);
     }
 
     public void showBuildingMenu() {
+        buildingUIManager.updateBuildingLabels();
         buildingUIManager.showBuildingMenu();
     }
 
