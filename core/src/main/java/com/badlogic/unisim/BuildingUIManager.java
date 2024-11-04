@@ -18,19 +18,25 @@ public class BuildingUIManager {
     private final Texture[] buildableTextures;
     private final Texture[] nonBuildableTextures;
     private final String[] buildingNames;
+    private Label[] buildingLabels;
     private final Map<String, String> buildingNameToType;
     private final ScrollPane scrollPane;
     private final BuildingPlacer buildingPlacer;
+    private final BuildingsTracker buildingsTracker;
 
-    public BuildingUIManager(UniSimGame game, Stage stage, BuildingPlacer buildingPlacer) {
+    public BuildingUIManager(UniSimGame game, Stage stage,
+                             BuildingPlacer buildingPlacer,
+                             BuildingsTracker buildingsTracker) {
         this.game = game;
         this.buildingPlacer = buildingPlacer;
+        this.buildingsTracker = buildingsTracker;
         this.defaultTextures = loadDefaultTextures();
         this.buildableTextures = loadBuildableTextures();
         this.nonBuildableTextures = loadNonBuildableTextures();
         this.buildingNames = new String[]{"Potato Shop", "Space science",
                                             "Motel Mars", "Zero-g bowling"};
         this.buildingNameToType = loadBuildingNameToType(buildingNames);
+        this.buildingLabels = new Label[defaultTextures.length];
         // Create all the tables required to organise UI elements
         Table buildingTable = createBuildingTable(buildingNames);
         this.scrollPane = createScrollPane(buildingTable);
@@ -114,7 +120,7 @@ public class BuildingUIManager {
      */
     private Table createBuildingTable(String[] buildingNames) {
         ImageButton[] buildingButtons = new ImageButton[defaultTextures.length];
-        Label[] buildingLabels = new Label[defaultTextures.length];
+        buildingLabels = new Label[defaultTextures.length];
         Table buildingTable = new Table();
         addImagesToTable(buildingTable, buildingButtons, defaultTextures,
                          buildingLabels, buildingNames);
@@ -168,7 +174,10 @@ public class BuildingUIManager {
             // Style the image buttons
             buildingButtons[i] = createStyledImageButton(defaultTextures[i], game.skin);
             // Create label for each building using the names
-            buildingLabels[i] = new Label(buildingNames[i], game.skin);
+            buildingLabels[i] = new Label(
+                buildingNames[i]+ ": " + getTypeAvailability(buildingNames[i]), game.skin
+            );
+            buildingLabels[i].setFontScale(1.5f);
             // Create image-label table
             Table imageLabelTable = createImageLabelTable(buildingLabels[i], buildingButtons[i]);
             // Add the table of image-label pairs to the buildings table
@@ -226,6 +235,7 @@ public class BuildingUIManager {
     private void addClickListenerToImageButtons(ImageButton[] buildingButtons) {
         for (int i = 0; i < buildingButtons.length; i++) {
             buildingButtons[i].addListener(new NewBuildingClickListener(buildingPlacer,
+                                                                     buildingsTracker,
                                                                      defaultTextures[i],
                                                                      buildableTextures[i],
                                                                      nonBuildableTextures[i],
@@ -234,6 +244,19 @@ public class BuildingUIManager {
             );
         }
     }
+
+    private int getTypeAvailability(String buildingName) {
+        String buildingType = buildingNameToType.get(buildingName);
+        return buildingsTracker.buildingTypesAvailability.get(buildingType);
+    }
+
+    public void updateBuildingLabels() {
+        for (int i = 0; i < buildingLabels.length; i++) {
+            String updatedAvailability = buildingNames[i] + ": " + getTypeAvailability(buildingNames[i]);
+            buildingLabels[i].setText(updatedAvailability);
+        }
+    }
+
 
     public void dispose() {
         for (int i = 0; i < defaultTextures.length ; i++) {

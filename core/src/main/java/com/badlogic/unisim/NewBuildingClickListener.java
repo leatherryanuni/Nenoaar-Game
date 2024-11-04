@@ -11,18 +11,21 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 public class NewBuildingClickListener extends ClickListener {
     private final BuildingUIManager buildingUIManager;
     private final BuildingPlacer buildingPlacer;
+    private final BuildingsTracker buildingsTracker;
     private final Texture buildingTexture;
     private final Texture buildableBuildingTexture;
     private final Texture nonBuildableBuildingTexture;
     private final String buildingType;
 
     public NewBuildingClickListener(BuildingPlacer buildingPlacer,
+                                    BuildingsTracker buildingsTracker,
                                     Texture buildingTexture,
                                     Texture buildableBuildingTexture,
                                     Texture nonBuildableBuildingTexture,
                                     BuildingUIManager buildingUIManager,
                                     String buildingType) {
         this.buildingPlacer = buildingPlacer;
+        this.buildingsTracker = buildingsTracker;
         this.buildingTexture = buildingTexture;
         this.buildableBuildingTexture = buildableBuildingTexture;
         this.nonBuildableBuildingTexture = nonBuildableBuildingTexture;
@@ -32,9 +35,14 @@ public class NewBuildingClickListener extends ClickListener {
 
     @Override
     public void clicked(InputEvent event, float x, float y) {
+        // If no more of a building type can be placed, prevent building selection.
+        if (!buildingsTracker.isBuildingTypeAvailable(buildingType)) {
+            return;
+        }
         buildingPlacer.selectNewBuilding(buildingTexture, buildableBuildingTexture,
                                       nonBuildableBuildingTexture,
                                       buildingType);
+        buildingPlacer.enableBuildingActors();
         buildingUIManager.hideBuildingMenu();
     }
 }

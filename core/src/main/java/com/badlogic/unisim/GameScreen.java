@@ -23,6 +23,7 @@ public class GameScreen implements Screen {
     private final PausePopup pausePopup;
     private UIManager uiManager;
     private BuildingPlacer buildingPlacer;
+    private BuildingsTracker buildingsTracker;
     private OrthographicCamera camera;
     private FitViewport viewport;
     private TiledMap tiledMap;
@@ -51,9 +52,10 @@ public class GameScreen implements Screen {
         System.out.println(viewport.getScreenWidth() + "," + viewport.getScreenHeight());
         // Create stage
         Stage stage = new Stage(viewport);
-        buildingPlacer = new BuildingPlacer(game, viewport, stage, buildableLayer);
+        buildingsTracker = new BuildingsTracker();
+        buildingPlacer = new BuildingPlacer(game, buildingsTracker, viewport, stage, buildableLayer);
         // Load UI
-        uiManager = new UIManager(game, stage, buildingPlacer);
+        uiManager = new UIManager(game, stage, buildingPlacer, buildingsTracker);
         // Load input processor for the game.
         GameInputProcessor gameInputProcessor = new GameInputProcessor(
                                             gameTimer, pausePopup,
@@ -88,7 +90,7 @@ public class GameScreen implements Screen {
         mapRenderer.render();
         // Begin drawing
         game.batch.begin();
-        buildingPlacer.drawBuildings();
+        buildingsTracker.drawBuildings();
         buildingPlacer.attachBuildingToMouse();
         // Increase the size of the font used for on-screen writing
         game.font.getData().setScale(3.0f);

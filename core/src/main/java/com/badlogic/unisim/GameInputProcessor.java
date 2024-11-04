@@ -42,7 +42,7 @@ public class GameInputProcessor implements InputProcessor {
             }
             return true;
         }
-        // Disable any other key inputs if the game is paused.
+        // Don't register any other key inputs if the game is paused.
         if (gameTimer.isPaused()) {
             return false;
         }
@@ -50,6 +50,8 @@ public class GameInputProcessor implements InputProcessor {
             // The key 'M' allows closing and opening the building menu.
             if (uiManager.isBuildingMenuVisible()) {
                 uiManager.hideBuildingMenu();
+                // Make placed buildings clickable
+                buildingPlacer.enableBuildingActors();
             } else {
                 uiManager.showBuildingMenu();
                 // If the building menu is opened when a placed building is
@@ -57,10 +59,13 @@ public class GameInputProcessor implements InputProcessor {
                 if (buildingPlacer.isPlacedBuildingSelected) {
                     buildingPlacer.deleteBuilding();
                 }
+                // Make placed buildings no longer clickable
+                buildingPlacer.disableBuildingActors();
                 buildingPlacer.deselectBuilding();
             }
         }
         if (keycode == Input.Keys.BACKSPACE) {
+            // BACKSPACE will delete a selected placed building
             if (buildingPlacer.isPlacedBuildingSelected) {
                 buildingPlacer.deleteBuilding();
                 buildingPlacer.deselectBuilding();
