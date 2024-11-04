@@ -4,8 +4,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class PlacedBuildingClickListener extends ClickListener {
-    BuildingPlacer buildingPlacer;
-    Building building;
+    private final BuildingPlacer buildingPlacer;
+    private final Building building;
 
     public PlacedBuildingClickListener(BuildingPlacer buildingPlacer,
                                        Building building) {
@@ -15,6 +15,8 @@ public class PlacedBuildingClickListener extends ClickListener {
 
     @Override
     public void clicked(InputEvent event, float x, float y) {
+        // Don't allow a placed building to be clicked if a building is currently
+        // selected.
         if (buildingPlacer.isNewBuildingSelected || buildingPlacer.isPlacedBuildingSelected) {
             return;
         }

@@ -49,7 +49,6 @@ public class GameScreen implements Screen {
         TiledMapTileLayer buildableLayer = (TiledMapTileLayer) tiledMap.getLayers().get("BuildableLayer");
         // Create a map renderer to be able to render the map in game.
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-        System.out.println(viewport.getScreenWidth() + "," + viewport.getScreenHeight());
         // Create stage
         Stage stage = new Stage(viewport);
         buildingsTracker = new BuildingsTracker();
@@ -90,20 +89,21 @@ public class GameScreen implements Screen {
         mapRenderer.render();
         // Begin drawing
         game.batch.begin();
+        // The order in which objects are drawn is important, as if e.g object1
+        // is drawn after object2, object2 would be on top of object2.
         buildingsTracker.drawBuildings();
         buildingPlacer.attachBuildingToMouse();
         // Increase the size of the font used for on-screen writing
         game.font.getData().setScale(3.0f);
         // Display the timer on-screen
-        game.font.draw(game.batch, "Time remaining: " + gameTimer.getFormattedTime(),
-                20, 40);
+        game.font.draw(game.batch, gameTimer.getFormattedDate(), 20, 40);
         uiManager.drawBuildingMenuPrompt();
         uiManager.drawDeleteBuildingPrompt();
         uiManager.drawBuildingCounter();
         pausePopup.draw();
         // Stop drawing
         game.batch.end();
-
+        // render the menu elements on top of everything else.
         uiManager.renderUI(delta);
     }
 

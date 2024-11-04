@@ -39,6 +39,7 @@ public class NewBuildingClickListener extends ClickListener {
         if (!buildingsTracker.isBuildingTypeAvailable(buildingType)) {
             return;
         }
+        // Otherwise allow building selection.
         buildingPlacer.selectNewBuilding(buildingTexture, buildableBuildingTexture,
                                       nonBuildableBuildingTexture,
                                       buildingType);

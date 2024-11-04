@@ -66,7 +66,7 @@ public class Building {
         return buildingType;
     }
 
-    // Enables the sprite to be clickable.
+    // Enables the clickable region of a sprite.
     public void enableActor() {
         buildingActor.setVisible(true);
     }
@@ -90,6 +90,7 @@ public class Building {
         buildingPositionY = snappedPositionY;
         buildingSprite.setTexture(defaultTexture);
         buildingSprite.setPosition(buildingPositionX, buildingPositionY);
+        // Set the actor to be the same size as its sprite.
         buildingActor.setBounds(buildingPositionX, buildingPositionY,
             buildingSprite.getWidth(), buildingSprite.getHeight());
     }

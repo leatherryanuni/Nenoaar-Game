@@ -20,6 +20,10 @@ public class BuildingsTracker {
         setBuildingTypeAvailability("recreation", 1);
     }
 
+    /**
+     * Returns the number of buildings currently placed on the map.
+     * @return the number of buildings placed on the map.
+     */
     public int getBuildingCount() {
         return placedBuildings.size();
     }
@@ -32,6 +36,12 @@ public class BuildingsTracker {
         return placedBuildings;
     }
 
+    /**
+     * Checks whether it is still possible to place more buildings of a given
+     * type.
+     * @param buildingType the type of building. e.g 'sleep', 'learn'.
+     * @return true if there is still availability, false otherwise.
+     */
     public boolean isBuildingTypeAvailable(String buildingType) {
         int availability = buildingTypesAvailability.get(buildingType);
         return availability > 0;
@@ -57,11 +67,21 @@ public class BuildingsTracker {
         increaseBuildingTypeAvailability(buildingType);
     }
 
+    /**
+     * Temporarily disable its collision detection to stop the selected
+     * building from colliding with itself and disable its clickable region.
+     * @param building the building object to be 'disabled'.
+     */
     public void disableBuildingOnMap(Building building) {
         placedBuildings.remove(building);
         building.disableActor();
     }
 
+    /**
+     * Enable its collision detection when placed and enable its clickable
+     * region.
+     * @param building the building object to be 'enabled'.
+     */
     public void enableBuildingOnMap(Building building) {
         placedBuildings.put(building, building.getBuildingType());
         building.enableActor();
@@ -73,16 +93,29 @@ public class BuildingsTracker {
         }
     }
 
+    /**
+     * Sets the limit for how many buildings of each type can be placed.
+     * @param buildingType the type of building.
+     * @param availability the amount of each building type that can be placed.
+     */
     private void setBuildingTypeAvailability(String buildingType, int availability) {
         buildingTypesAvailability.put(buildingType, availability);
     }
 
+    /**
+     * Free up availability, this is done when a building is deleted.
+     * @param buildingType the type of building.
+     */
     private void increaseBuildingTypeAvailability(String buildingType) {
         int currentAvailability = buildingTypesAvailability.get(buildingType);
         currentAvailability++;
         buildingTypesAvailability.put(buildingType, currentAvailability);
     }
 
+    /**
+     * Decrease availability, this is done when a building is placed.
+     * @param buildingType the type of building.
+     */
     private void decreaseBuildingTypeAvailability(String buildingType) {
         int currentAvailability = buildingTypesAvailability.get(buildingType);
         currentAvailability--;

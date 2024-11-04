@@ -14,6 +14,14 @@ public class PausePopup implements PopUp {
     }
 
     /**
+     * Checks if the message is visible or not.
+     * @return true if the message is visible, otherwise false.
+     */
+    public boolean isVisible() {
+        return isVisible;
+    }
+
+    /**
      * Shows the paused message.
      */
     public void show() {
@@ -40,15 +48,5 @@ public class PausePopup implements PopUp {
         }
     }
 
-    public void dispose() {
-
-    }
-
-    /**
-     * Checks if the message is visible or not.
-     * @return true if the message is visible, otherwise false.
-     */
-    public boolean isVisible() {
-        return isVisible;
-    }
+    public void dispose() {}
 }
