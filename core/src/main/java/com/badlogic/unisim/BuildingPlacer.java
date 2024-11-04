@@ -176,12 +176,18 @@ public class BuildingPlacer {
         buildingsTracker.removeBuilding(placedBuilding);
     }
 
+    /**
+     * Prevents map regions covered by a building actor from being clickable.
+     */
     public void disableBuildingActors() {
         for (Building building : placedBuildings.keySet()) {
             building.disableActor();
         }
     }
 
+    /**
+     * Enables map regions covered by a building actor to be clickable.
+     */
     public void enableBuildingActors() {
         for (Building building : placedBuildings.keySet()) {
             building.enableActor();

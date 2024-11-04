@@ -6,7 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 /**
  * This class is responsible for the overall UI of the GameScreen, containing
- * smaller UI manager classes
+ * smaller UI manager classes. It is responsible for 4 main elements:
+ *  - BuildingMenu: the menu that contains the selection of buildings.
+ *  - BuildingMenuPrompt: the prompt that indicates what key to press to
+ *  open the menu.
+ *  - DeleteBuildingPrompt: the prompt that indicates what key to press to
+ *  delete a building.
+ *  - BuildingCounter: the number of buildings placed on the map.
  */
 public class UIManager {
     private final Skin skin;
@@ -39,15 +45,10 @@ public class UIManager {
         stage.draw();
     }
 
-    public void dispose() {
-        stage.dispose();
-        skin.dispose();
-        buildingUIManager.dispose();
-    }
-
     public void showBuildingMenuPrompt() {
         isBuildingMenuPromptVisible = true;
     }
+
     public void hideBuildingMenuPrompt() {
         isBuildingMenuPromptVisible = false;
     }
@@ -87,6 +88,12 @@ public class UIManager {
 
     public boolean isBuildingMenuVisible() {
         return buildingUIManager.isVisible();
+    }
+
+    public void dispose() {
+        stage.dispose();
+        skin.dispose();
+        buildingUIManager.dispose();
     }
 }
 

@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
- * This class is responsible for UI elements that allow building selection.
+ * This class is responsible for UI elements that show the selection of buildings.
  */
 public class BuildingUIManager {
     private final UniSimGame game;
@@ -45,6 +45,10 @@ public class BuildingUIManager {
         stage.addActor(mainTable);
     }
 
+    /**
+     * Returns true if the building menu is visible, false otherwise.
+     * @return true if the building menu is visible, false otherwise.
+     */
     public boolean isVisible() {
         return scrollPane.isVisible();
     }
@@ -55,6 +59,16 @@ public class BuildingUIManager {
 
     public void hideBuildingMenu() {
         scrollPane.setVisible(false);
+    }
+
+    /**
+     * Changes the availability count of each building type in the building menu.
+     */
+    public void updateBuildingLabels() {
+        for (int i = 0; i < buildingLabels.length; i++) {
+            String updatedAvailability = buildingNames[i] + ": " + getTypeAvailability(buildingNames[i]);
+            buildingLabels[i].setText(updatedAvailability);
+        }
     }
 
     /**
@@ -248,13 +262,6 @@ public class BuildingUIManager {
     private int getTypeAvailability(String buildingName) {
         String buildingType = buildingNameToType.get(buildingName);
         return buildingsTracker.buildingTypesAvailability.get(buildingType);
-    }
-
-    public void updateBuildingLabels() {
-        for (int i = 0; i < buildingLabels.length; i++) {
-            String updatedAvailability = buildingNames[i] + ": " + getTypeAvailability(buildingNames[i]);
-            buildingLabels[i].setText(updatedAvailability);
-        }
     }
 
 

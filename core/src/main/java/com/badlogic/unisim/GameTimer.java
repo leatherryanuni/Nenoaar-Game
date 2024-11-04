@@ -2,15 +2,21 @@ package com.badlogic.unisim;
 
 /**
  * This class is responsible for running a timer in the game upon entering
- * the game screen.
+ * the game screen and updating the time of year display.
  */
 public class GameTimer {
     private float remainingTime;
     private boolean isPaused;
+    private final int setMinutes;
+    private final String[] seasonsOfTheYear;
+    private final String[] Years;
 
-    public GameTimer(int minutes) {
-        this.remainingTime = minutes * 60f;
-        this.isPaused = true; // Game starts paused
+    public GameTimer(int setMinutes) {
+        this.setMinutes = setMinutes;
+        this.remainingTime = setMinutes * 60f;
+        this.isPaused = true;// Game starts paused
+        this.seasonsOfTheYear = new String[]{"Spring", "Summer", "Autumn", "Winter"};
+        this.Years = new String[]{"2062", "2063", "2064", "2065", "2066"};
     }
 
     /**
@@ -47,13 +53,23 @@ public class GameTimer {
     }
 
     /**
-     * Converts the remaining time in seconds into minutes and seconds,
-     * and prints it.
-     * @return the time in minutes and seconds as a string.
+     * Converts a 5-minute time frame into a 5-year period, with each year
+     * split into 4 seasons.
+     * @return the season of the year and the year.
      */
-    public String getFormattedTime() {
-        int minutes = (int) (remainingTime / 60);
-        int seconds = (int) (remainingTime % 60);
-        return String.format("%02d:%02d", minutes, seconds);
+    public String getFormattedDate() {
+        int SECONDS_PER_MIN = 60;
+        int SECONDS_PER_SEASON = 15;
+        // Carry out some calculations to iterate through array of years every
+        // minute.
+        int remainingMinutes = (int) (remainingTime / SECONDS_PER_MIN);
+        int yearsIndex = setMinutes - remainingMinutes;
+        // Carry out some calculations to iterate through array of seasons every
+        // 15 seconds, starting from 0 again every minute.
+        int remainingSeconds = (int) (remainingTime % SECONDS_PER_MIN);
+        int elapsedIntervals = (SECONDS_PER_MIN - remainingSeconds) / SECONDS_PER_SEASON;
+        int seasonIndex = elapsedIntervals % seasonsOfTheYear.length;
+        // return is of the format e.g Spring + " " + 2066
+        return seasonsOfTheYear[seasonIndex] + " " + Years[yearsIndex];
     }
 }

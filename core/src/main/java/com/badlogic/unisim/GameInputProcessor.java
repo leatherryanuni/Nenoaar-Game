@@ -116,6 +116,7 @@ public class GameInputProcessor implements InputProcessor {
         if (gameTimer.isPaused()) {
             return false;
         }
+        // If either a new building or placed building is selected.
         if (buildingPlacer.isNewBuildingSelected || buildingPlacer.isPlacedBuildingSelected) {
             buildingPlacer.snapBuildingToGrid(screenX, screenY);
         }
