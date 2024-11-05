@@ -25,7 +25,7 @@ public class GameInputProcessor implements InputProcessor {
     public boolean keyDown (int keycode) {
         // The key 'P' allows pausing and resuming in-game.
         if (keycode == Input.Keys.P) {
-            if (gameTimer.isPaused()) {
+            if (gameTimer.getIsPaused()) {
                 gameTimer.resumeTime();
                 pausePopup.hide();
                 uiManager.showBuildingMenuPrompt();
@@ -43,7 +43,7 @@ public class GameInputProcessor implements InputProcessor {
             return true;
         }
         // Don't register any other key inputs if the game is paused.
-        if (gameTimer.isPaused()) {
+        if (gameTimer.getIsPaused()) {
             return false;
         }
         if (keycode == Input.Keys.M) {
@@ -84,7 +84,7 @@ public class GameInputProcessor implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         // Disable click input if game is paused.
-        if (gameTimer.isPaused()) {
+        if (gameTimer.getIsPaused()) {
             return false;
         }
         // Don't register click input if the building is not in a buildable area
@@ -113,7 +113,7 @@ public class GameInputProcessor implements InputProcessor {
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         // Don't register mouse movement if game is paused
-        if (gameTimer.isPaused()) {
+        if (gameTimer.getIsPaused()) {
             return false;
         }
         // If either a new building or placed building is selected.

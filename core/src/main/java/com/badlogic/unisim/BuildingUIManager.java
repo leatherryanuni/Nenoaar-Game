@@ -259,6 +259,11 @@ public class BuildingUIManager {
         }
     }
 
+    /**
+     * Returns how many of the building's type can still be placed.
+     * @param buildingName the name of the building.
+     * @return how many of the building's type can still be placed.
+     */
     private int getTypeAvailability(String buildingName) {
         String buildingType = buildingNameToType.get(buildingName);
         return buildingsTracker.buildingTypesAvailability.get(buildingType);
@@ -270,7 +275,6 @@ public class BuildingUIManager {
             defaultTextures[i].dispose();
             buildableTextures[i].dispose();
             nonBuildableTextures[i].dispose();
-            buildingPlacer.dispose();
         }
     }
 }

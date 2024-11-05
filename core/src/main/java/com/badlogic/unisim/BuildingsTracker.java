@@ -8,11 +8,11 @@ import java.util.Map;
  * the number of each building.
  */
 public class BuildingsTracker {
-    private final Map<Building, String> placedBuildings;
+    private final Map<Building, String> placedBuildingsToType;
     public final Map<String, Integer> buildingTypesAvailability;
 
     public BuildingsTracker() {
-        this.placedBuildings = new HashMap<>();
+        this.placedBuildingsToType = new HashMap<>();
         this.buildingTypesAvailability = new HashMap<>();
         setBuildingTypeAvailability("eat", 1);
         setBuildingTypeAvailability("sleep", 2);
@@ -25,15 +25,15 @@ public class BuildingsTracker {
      * @return the number of buildings placed on the map.
      */
     public int getBuildingCount() {
-        return placedBuildings.size();
+        return placedBuildingsToType.size();
     }
 
     /**
      * Retrieve the Building objects and their types.
      * @return the Building objects mapped to their types.
      */
-    public Map<Building, String> getPlacedBuildings() {
-        return placedBuildings;
+    public Map<Building, String> getPlacedBuildingsToType() {
+        return placedBuildingsToType;
     }
 
     /**
@@ -53,7 +53,7 @@ public class BuildingsTracker {
      */
     public void addBuilding(Building building) {
         String buildingType = building.getBuildingType();
-        placedBuildings.put(building, buildingType);
+        placedBuildingsToType.put(building, buildingType);
         decreaseBuildingTypeAvailability(buildingType);
     }
 
@@ -63,7 +63,7 @@ public class BuildingsTracker {
      */
     public void removeBuilding(Building building) {
         String buildingType = building.getBuildingType();
-        placedBuildings.remove(building);
+        placedBuildingsToType.remove(building);
         increaseBuildingTypeAvailability(buildingType);
     }
 
@@ -73,7 +73,7 @@ public class BuildingsTracker {
      * @param building the building object to be 'disabled'.
      */
     public void disableBuildingOnMap(Building building) {
-        placedBuildings.remove(building);
+        placedBuildingsToType.remove(building);
         building.disableActor();
     }
 
@@ -83,12 +83,12 @@ public class BuildingsTracker {
      * @param building the building object to be 'enabled'.
      */
     public void enableBuildingOnMap(Building building) {
-        placedBuildings.put(building, building.getBuildingType());
+        placedBuildingsToType.put(building, building.getBuildingType());
         building.enableActor();
     }
 
     public void drawBuildings() {
-        for (Building building : placedBuildings.keySet()) {
+        for (Building building : placedBuildingsToType.keySet()) {
             building.draw();
         }
     }
