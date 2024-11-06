@@ -4,7 +4,7 @@ package com.badlogic.unisim;
  * This class is responsible for displaying and hiding a message, indicating
  * whether the game is paused or not.
  */
-public class PausePopup implements PopUp {
+public class PausePopup implements Popup {
     private final UniSimGame game;
     private boolean isVisible;
 
@@ -17,7 +17,7 @@ public class PausePopup implements PopUp {
      * Checks if the message is visible or not.
      * @return true if the message is visible, otherwise false.
      */
-    public boolean isVisible() {
+    public boolean getIsVisible() {
         return isVisible;
     }
 
@@ -40,7 +40,7 @@ public class PausePopup implements PopUp {
      *  SpriteBatch object used for rendering the message.
      */
     public void draw() {
-        if (isVisible()) {
+        if (getIsVisible()) {
             int MESSAGE_POSITION_X = 650;
             int MESSAGE_POSITION_Y = 560;
             String pausedMessage = "Game Paused. Press P to resume.";

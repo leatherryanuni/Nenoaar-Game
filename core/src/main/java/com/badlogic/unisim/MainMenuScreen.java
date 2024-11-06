@@ -46,7 +46,7 @@ public class MainMenuScreen implements Screen {
         if (Gdx.input.justTouched()) {
             // Switch to GameScreen when user clicks screen.
             game.setScreen(new GameScreen(game));
-            this.hide();
+            this.dispose();
         }
     }
 

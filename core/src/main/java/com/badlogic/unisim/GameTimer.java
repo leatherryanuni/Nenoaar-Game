@@ -7,16 +7,16 @@ package com.badlogic.unisim;
 public class GameTimer {
     private float remainingTime;
     private boolean isPaused;
-    private final int setMinutes;
+    private final int durationInMinutes;
     private final String[] seasonsOfTheYear;
-    private final String[] Years;
+    private final String[] years;
 
     public GameTimer(int setMinutes) {
-        this.setMinutes = setMinutes;
+        this.durationInMinutes = setMinutes;
         this.remainingTime = setMinutes * 60f;
         this.isPaused = true;// Game starts paused
         this.seasonsOfTheYear = new String[]{"Spring", "Summer", "Autumn", "Winter"};
-        this.Years = new String[]{"2062", "2063", "2064", "2065", "2066"};
+        this.years = new String[]{"2062", "2063", "2064", "2065", "2066"};
     }
 
     /**
@@ -48,7 +48,7 @@ public class GameTimer {
      * Checks if the game is paused or not.
      * @return true if the game is paused, otherwise false.
      */
-    public boolean isPaused() {
+    public boolean getIsPaused() {
         return isPaused;
     }
 
@@ -63,13 +63,13 @@ public class GameTimer {
         // Carry out some calculations to iterate through array of years every
         // minute.
         int remainingMinutes = (int) (remainingTime / SECONDS_PER_MIN);
-        int yearsIndex = setMinutes - remainingMinutes;
+        int yearsIndex = durationInMinutes - remainingMinutes;
         // Carry out some calculations to iterate through array of seasons every
         // 15 seconds, starting from 0 again every minute.
         int remainingSeconds = (int) (remainingTime % SECONDS_PER_MIN);
         int elapsedIntervals = (SECONDS_PER_MIN - remainingSeconds) / SECONDS_PER_SEASON;
         int seasonIndex = elapsedIntervals % seasonsOfTheYear.length;
         // return is of the format e.g Spring + " " + 2066
-        return seasonsOfTheYear[seasonIndex] + " " + Years[yearsIndex];
+        return seasonsOfTheYear[seasonIndex] + " " + years[yearsIndex];
     }
 }

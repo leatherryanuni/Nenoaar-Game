@@ -1,5 +1,6 @@
 package com.badlogic.unisim;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -26,6 +27,11 @@ public class EndScreen implements Screen {
 
         game.batch.begin();
         game.batch.end();
+
+        if (Gdx.input.justTouched()) {
+            // Switch to main menu screen upon clicking, i.e start new game.
+            game.setScreen(new MainMenuScreen(game));
+        }
     }
 
     @Override

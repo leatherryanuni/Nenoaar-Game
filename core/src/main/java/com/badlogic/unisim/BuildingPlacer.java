@@ -19,7 +19,7 @@ public class BuildingPlacer {
     private final CollisionDetector collisionDetector;
     private final FitViewport viewport;
     private final Stage stage;
-    private final Map<Building, String> placedBuildings;
+    private final Map<Building, String> placedBuildingsToType;
     private final Vector3 mousePosition = new Vector3();
     private final int TILE_WIDTH;
     private final int TILE_HEIGHT;
@@ -39,7 +39,7 @@ public class BuildingPlacer {
         this.buildingsTracker = buildingsTracker;
         this.viewport = viewport;
         this.stage = stage;
-        this.placedBuildings = buildingsTracker.getPlacedBuildings();
+        this.placedBuildingsToType = buildingsTracker.getPlacedBuildingsToType();
         this.isBuildable = true;
         this.TILE_WIDTH = buildableLayer.getTileWidth();
         this.TILE_HEIGHT = buildableLayer.getTileHeight();
@@ -70,7 +70,7 @@ public class BuildingPlacer {
             buildingTileWidth,
             buildingTileHeight,
             buildingSprite,
-            placedBuildings);
+            placedBuildingsToType);
         updateBuildingTexture(isBuildable);
         // 'snap' the building to the screen coordinate closest to the
         // corresponding grid cell.
@@ -81,21 +81,21 @@ public class BuildingPlacer {
 
     /**
      * Creates a building sprite upon selection of a building from building menu.
-     * @param buildingTexture The general texture of the building.
+     * @param defaultTexture The general texture of the building.
      * @param buildableTexture The texture representing the building
      *        when it can be placed in the current location on the map.
      * @param nonBuildableTexture The texture representing the building
      *        when it cannot be placed in the current location of the map.
      */
-    public void selectNewBuilding(Texture buildingTexture,
+    public void selectNewBuilding(Texture defaultTexture,
                                   Texture buildableTexture,
                                   Texture nonBuildableTexture,
                                   String buildingType) {
         this.isNewBuildingSelected = true;
-        this.defaultTexture = buildingTexture;
+        this.defaultTexture = defaultTexture;
         this.buildableTexture = buildableTexture;
         this.nonBuildableTexture = nonBuildableTexture;
-        buildingSprite = new Sprite(buildingTexture);
+        buildingSprite = new Sprite(defaultTexture);
         this.buildingType = buildingType;
     }
 
@@ -180,7 +180,7 @@ public class BuildingPlacer {
      * Prevents map regions covered by a building actor from being clickable.
      */
     public void disableBuildingActors() {
-        for (Building building : placedBuildings.keySet()) {
+        for (Building building : placedBuildingsToType.keySet()) {
             building.disableActor();
         }
     }
@@ -189,7 +189,7 @@ public class BuildingPlacer {
      * Enables map regions covered by a building actor to be clickable.
      */
     public void enableBuildingActors() {
-        for (Building building : placedBuildings.keySet()) {
+        for (Building building : placedBuildingsToType.keySet()) {
             building.enableActor();
         }
     }
@@ -215,11 +215,5 @@ public class BuildingPlacer {
     private void addClickListenerToBuilding(Building newPlacedBuilding) {
         newPlacedBuilding.getBuildingActor().addListener(
             new PlacedBuildingClickListener(this, newPlacedBuilding));
-    }
-
-    public void dispose() {
-        defaultTexture.dispose();
-        buildableTexture.dispose();
-        nonBuildableTexture.dispose();
     }
 }
