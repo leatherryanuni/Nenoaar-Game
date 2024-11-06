@@ -1,6 +1,5 @@
 package com.badlogic.unisim;
 
-import java.util.HashMap;
 import java.util.Map;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -30,18 +29,20 @@ public class BuildingUIManager {
         this.game = game;
         this.buildingPlacer = buildingPlacer;
         this.buildingsTracker = buildingsTracker;
-        this.defaultTextures = loadDefaultTextures();
-        this.buildableTextures = loadBuildableTextures();
-        this.nonBuildableTextures = loadNonBuildableTextures();
-        this.buildingNames = new String[]{"Potato Shop", "Space science",
-                                            "Motel Mars", "Zero-g bowling"};
-        this.buildingNameToType = loadBuildingNameToType(buildingNames);
+        // Load in and create all the assets and data structures required for
+        // the buildings
+        BuildingAssetsManager buildingAssetsManager = new BuildingAssetsManager();
+        this.defaultTextures = buildingAssetsManager.loadDefaultTextures();
+        this.buildableTextures = buildingAssetsManager.loadBuildableTextures();
+        this.nonBuildableTextures = buildingAssetsManager.loadNonBuildableTextures();
+        this.buildingNames = buildingAssetsManager.getBuildingNames();
+        this.buildingNameToType = buildingAssetsManager.getBuildingNameToType();
         this.buildingLabels = new Label[defaultTextures.length];
         // Create all the tables required to organise UI elements
         Table buildingTable = createBuildingTable(buildingNames);
         this.scrollPane = createScrollPane(buildingTable);
         Table mainTable = createMainTable(scrollPane);
-
+        // Add the UI elements to the stage.
         stage.addActor(mainTable);
     }
 
@@ -69,62 +70,6 @@ public class BuildingUIManager {
             String updatedAvailability = buildingNames[i] + ": " + getTypeAvailability(buildingNames[i]);
             buildingLabels[i].setText(updatedAvailability);
         }
-    }
-
-    /**
-     * Creates an array of Texture objects that represent the building images.
-     * @return an array of Texture objects.
-     */
-    private Texture[] loadDefaultTextures() {
-        return new Texture[] {
-            new Texture("building-textures-default/eat-potato-shop.png"),
-            new Texture("building-textures-default/learn-space-science.png"),
-            new Texture("building-textures-default/sleep-motel-mars.png"),
-            new Texture("building-textures-default/recreation-bowling.png")
-        };
-    }
-
-    /**
-     * Creates an array of Texture objects that have a green tint to indicate
-     * a building can be placed in a given location on the map.
-     * @return an array of Texture objects.
-     */
-    private Texture[] loadBuildableTextures() {
-        return new Texture[] {
-            new Texture("building-textures-buildable/eat-potato-shop-buildable.png"),
-            new Texture("building-textures-buildable/learn-space-science-buildable.png"),
-            new Texture("building-textures-buildable/sleep-motel-mars-buildable.png"),
-            new Texture("building-textures-buildable/recreation-bowling-buildable.png")
-        };
-    }
-
-    /**
-     * Creates an array of Texture objects that have a red tint to indicate
-     * a building cannot be placed in a given location on the map.
-     * @return an array of Texture objects.
-     */
-    private Texture[] loadNonBuildableTextures() { // Building textures with a red tint to
-        return new Texture[] {                     // indicate a building cannot be placed
-            new Texture("building-textures-nonbuildable/eat-potato-shop-nonbuildable.png"),
-            new Texture("building-textures-nonbuildable/learn-space-science-nonbuildable.png"),
-            new Texture("building-textures-nonbuildable/sleep-motel-mars-nonbuildable.png"),
-            new Texture("building-textures-nonbuildable/recreation-bowling-nonbuildable.png")
-        };
-    }
-
-    /**
-     * Creates a Map object that maps the name of the building to its type
-     * e.g {potato shop: eat, space science: learn} .
-     * @param buildingNames array of building names.
-     * @return the Map object with each building name mapped to its type.
-     */
-    private Map<String, String> loadBuildingNameToType(String[] buildingNames) {
-        String[] buildingTypes = {"eat", "learn", "sleep", "recreation"};
-        Map<String, String> buildingNameToType = new HashMap<>();
-        for (int i = 0; i < buildingNames.length; i++) {
-            buildingNameToType.put(buildingNames[i], buildingTypes[i]);
-        }
-        return buildingNameToType;
     }
 
     /**
