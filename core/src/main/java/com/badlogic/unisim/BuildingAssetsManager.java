@@ -22,7 +22,6 @@ public class BuildingAssetsManager {
             "building-textures-default/learn_space-science.png",
             "building-textures-default/recreation_zero-g-bowling.png",
             "building-textures-default/sleep_motel-mars.png",
-            "building-textures-default/recreation_nightclub.png"
         };
 
         buildablePaths =  new String[]{
@@ -30,7 +29,6 @@ public class BuildingAssetsManager {
             "building-textures-buildable/learn_space-science.png",
             "building-textures-buildable/recreation_zero-g-bowling.png",
             "building-textures-buildable/sleep_motel-mars.png",
-            "building-textures-buildable/recreation_nightclub.png"
         };
 
         nonBuildablePaths =  new String[]{
@@ -38,7 +36,6 @@ public class BuildingAssetsManager {
             "building-textures-nonbuildable/learn_space-science.png",
             "building-textures-nonbuildable/recreation_zero-g-bowling.png",
             "building-textures-nonbuildable/sleep_motel-mars.png",
-            "building-textures-nonbuildable/recreation_nightclub.png"
         };
 
         // Check if all path arrays are of equal length

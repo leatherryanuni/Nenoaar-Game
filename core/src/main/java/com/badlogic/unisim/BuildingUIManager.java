@@ -150,7 +150,7 @@ public class BuildingUIManager {
     }
 
     /**
-     * Creates and styles a new ImageButton object using the building texture and a ui skin.
+     * Creates and styles a new ImageButton object using the building texture and an ui skin.
      * @param defaultTexture The normal texture of the building.
      * @param skin collection of assets to style a UI component.
      * @return new ImageButton implementing the ui skins and building texture.
