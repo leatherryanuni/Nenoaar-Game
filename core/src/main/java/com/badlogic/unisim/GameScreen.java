@@ -34,7 +34,7 @@ public class GameScreen implements Screen {
 
     public GameScreen(UniSimGame game) {
         this.game = game;
-        this.gameTimer = new GameTimer(5);
+        this.gameTimer = new GameTimer(1);
         this.pausePopup = new PausePopup(game);
     }
 

@@ -26,6 +26,7 @@ public class EndScreen implements Screen {
         camera.update();
 
         game.batch.begin();
+        game.font.draw(game.batch, "Click anywhere to restart", 650, 560);
         game.batch.end();
 
         if (Gdx.input.justTouched()) {
