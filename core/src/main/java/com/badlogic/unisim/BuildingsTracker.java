@@ -10,22 +10,23 @@ import java.util.Map;
 public class BuildingsTracker {
     private final Map<Building, String> placedBuildingsToType;
     public final Map<String, Integer> buildingTypesAvailability;
+    private final Map<String, Integer> placedBuildingTypesCount;
+
 
     public BuildingsTracker() {
         this.placedBuildingsToType = new HashMap<>();
         this.buildingTypesAvailability = new HashMap<>();
-        setBuildingTypeAvailability("eat", 1);
-        setBuildingTypeAvailability("sleep", 2);
-        setBuildingTypeAvailability("learn", 1);
-        setBuildingTypeAvailability("recreation", 1);
+        this.placedBuildingTypesCount = new HashMap<>();
+        setBuildingTypeAvailability();
+        setBuildingTypesCount();
     }
 
     /**
      * Returns the number of buildings currently placed on the map.
      * @return the number of buildings placed on the map.
      */
-    public int getBuildingCount() {
-        return placedBuildingsToType.size();
+    public int getBuildingCount(String buildingType) {
+        return placedBuildingTypesCount.get(buildingType);
     }
 
     /**
@@ -55,6 +56,7 @@ public class BuildingsTracker {
         String buildingType = building.getBuildingType();
         placedBuildingsToType.put(building, buildingType);
         decreaseBuildingTypeAvailability(buildingType);
+        increaseBuildingCount(buildingType);
     }
 
     /**
@@ -65,7 +67,9 @@ public class BuildingsTracker {
         String buildingType = building.getBuildingType();
         placedBuildingsToType.remove(building);
         increaseBuildingTypeAvailability(buildingType);
+        decreaseBuildingCount(buildingType);
     }
+
 
     /**
      * Temporarily disable its collision detection to stop the selected
@@ -95,15 +99,46 @@ public class BuildingsTracker {
 
     /**
      * Sets the limit for how many buildings of each type can be placed.
-     * @param buildingType the type of building.
-     * @param availability the amount of each building type that can be placed.
      */
-    private void setBuildingTypeAvailability(String buildingType, int availability) {
-        buildingTypesAvailability.put(buildingType, availability);
+    private void setBuildingTypeAvailability() {
+        buildingTypesAvailability.put("eat", 1);
+        buildingTypesAvailability.put("sleep", 2);
+        buildingTypesAvailability.put("learn", 1);
+        buildingTypesAvailability.put("recreation", 1);
     }
 
     /**
-     * Free up availability, this is done when a building is deleted.
+     * Initialises the count for each building type to 0.
+     */
+    private void setBuildingTypesCount() {
+        placedBuildingTypesCount.put("eat", 0);
+        placedBuildingTypesCount.put("sleep", 0);
+        placedBuildingTypesCount.put("learn", 0);
+        placedBuildingTypesCount.put("recreation", 0);
+    }
+
+    /**
+     * Increases building type count by 1.
+     * @param buildingType the type of building.
+     */
+    private void increaseBuildingCount(String buildingType) {
+        int currentCount = placedBuildingTypesCount.get(buildingType);
+        currentCount++;
+        placedBuildingTypesCount.put(buildingType, currentCount);
+    }
+
+    /**
+     * Decreases building type count by 1.
+     * @param buildingType the type of building.
+     */
+    private void decreaseBuildingCount(String buildingType) {
+        int currentCount = placedBuildingTypesCount.get(buildingType);
+        currentCount--;
+        placedBuildingTypesCount.put(buildingType, currentCount);
+    }
+
+    /**
+     * Free up availability by 1, this is done when a building is deleted.
      * @param buildingType the type of building.
      */
     private void increaseBuildingTypeAvailability(String buildingType) {
@@ -113,7 +148,7 @@ public class BuildingsTracker {
     }
 
     /**
-     * Decrease availability, this is done when a building is placed.
+     * Decrease availability by 1, this is done when a building is placed.
      * @param buildingType the type of building.
      */
     private void decreaseBuildingTypeAvailability(String buildingType) {

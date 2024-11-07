@@ -95,7 +95,9 @@ public class GameScreen implements Screen {
         buildingPlacer.attachBuildingToMouse();
         // Increase the size of the font used for on-screen writing
         game.font.getData().setScale(3.0f);
-        // Display the timer on-screen
+        // Display timer on-screen
+        game.font.draw(game.batch, gameTimer.getFormattedTime(), 20, 80);
+        // Display the date on-screen
         game.font.draw(game.batch, gameTimer.getFormattedDate(), 20, 40);
         uiManager.drawBuildingMenuPrompt();
         uiManager.drawDeleteBuildingPrompt();

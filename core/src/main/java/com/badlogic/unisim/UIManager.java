@@ -73,8 +73,14 @@ public class UIManager {
     }
 
     public void drawBuildingCounter() {
-        game.font.draw(game.batch, "Buildings placed: " + buildingsTracker.getBuildingCount(),
-            10, 1040);
+        String[] buildingTypes = new String[]{"Eat", "Learn", "Sleep", "Recreation"};
+        int yPosition = 1040;
+        for (String buildingType : buildingTypes) {
+            String lowercaseType = buildingType.toLowerCase();
+            game.font.draw(game.batch, buildingType + ": "
+                + buildingsTracker.getBuildingCount(lowercaseType), 10, yPosition);
+            yPosition -= 40;
+        }
     }
 
     public void showBuildingMenu() {

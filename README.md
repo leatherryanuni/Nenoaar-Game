@@ -32,6 +32,11 @@ Useful Gradle tasks and flags:
 Note that most tasks that are not specific to a single project can be run with `name:` prefix, where the `name` should be replaced with the ID of a specific project.
 For example, `core:clean` removes `build` folder only from the `core` project.
 
+## Download Guide
+If you intend to download the jar file of the game:
+ - Windows: No issues.
+ - MacOS: Will most likely say that the file is from an unidentified developer, to resolve this, go to System Settings -> Privacy & Security. Under the security heading
+
 ## Attribution 
  - LibGDX is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
  - 2D Art Tileset by [rubberduck](https://opengameart.org/content/colony-sim-extended-version) and [Buch] is licensed under [CC0 1.0 Universal (Public Domain Dedication)](http://creativecommons.org/publicdomain/zero/1.0/).

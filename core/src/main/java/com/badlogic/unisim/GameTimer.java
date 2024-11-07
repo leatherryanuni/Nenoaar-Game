@@ -72,4 +72,14 @@ public class GameTimer {
         // return is of the format e.g Spring + " " + 2066
         return seasonsOfTheYear[seasonIndex] + " " + years[yearsIndex];
     }
+
+    /**
+     * Displays the time remaining in minutes and seconds.
+     * @return the time remaining in the minutes and seconds.
+     */
+    public String getFormattedTime() {
+        int minutes = (int) (remainingTime / 60);
+        int seconds = (int) (remainingTime % 60);
+        return String.format("%02d:%02d", minutes, seconds);
+    }
 }
