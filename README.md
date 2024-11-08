@@ -35,7 +35,7 @@ For example, `core:clean` removes `build` folder only from the `core` project.
 ## Download Guide
 If you intend to download the jar file of the game:
  - Windows: No issues.
- - MacOS: Will most likely say that the file is from an unidentified developer, to resolve this, go to System Settings -> Privacy & Security. Under the security heading
+ - MacOS: Will most likely say that the file is from an unidentified developer, to resolve this, go to System Settings -> Privacy & Security. Under the security heading, there should be a notification regarding this, and below it, click 'Open Anyway'.
 
 ## Attribution 
  - LibGDX is licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
